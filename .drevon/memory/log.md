@@ -18,6 +18,10 @@ Chronological record of significant actions. Append only — never delete.
 **Action:** Updated mockup.html with: (1) Removed all "Get Started" buttons and profile icons, (2) Replaced all emojis with Lucide SVG icons, (3) Added real agent logos from LobeHub CDN with dark/light mode switching, (4) Added Hub vs Project side-by-side comparison section with directory trees.
 **Outcome:** Mockup v3 at workspace/landing-page/mockup.html — professional, no emojis, real logos, modes comparison.
 
+### 2026-03-01 — Published drevon@0.1.0 to npm
+**Action:** Published the drevon package to the npm registry under account `akashmunshi`. Ran `npm pkg fix` to resolve bin script name warning, then `npm publish`. Build (tsup) ran automatically via `prepublishOnly` hook.
+**Outcome:** Package live at https://www.npmjs.com/package/drevon. Installable via `npm install -g drevon`. 28 files, 74.7 kB packed.
+
 ### 2026-02-28 — Installed copywriting skill from skills.sh
 **Action:** Found and installed `copywriting` skill from `coreyhaines31/marketingskills` (22.6K installs, #46 on skills.sh leaderboard). Installed via `drevon skill add` with symlink method, project scope.
 **Outcome:** Skill available at `.agents/skills/copywriting` and `.drevon/skills/copywriting/`. Covers conversion copywriting: headline formulas, CTA guidelines, page structure frameworks, writing style rules, and persuasion principles.
