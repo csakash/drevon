@@ -14,7 +14,21 @@ import {
   getPresetIdentity,
 } from '../utils/prompts.js';
 
+const BANNER = `
+      _
+     | |
+   __| |  ____  _____  _   _   ___   ____
+  / _  | / ___)| ___ || | | | / _ \\ |  _ \\
+ ( (_| || |    | ____| \\ V / | |_| || | | |
+  \\____||_|    |_____)  \\_/   \\___/ |_| |_|
+
+  GitHub:  https://github.com/csakash/drevon
+  Web:     https://drevon.trysudosu.com
+  Builder: akash@trysudosu.com | @akashmunshi07
+`;
+
 export async function initCommand(options: CLIOptions): Promise<void> {
+  console.log(BANNER);
   const cwd = process.cwd();
 
   // Check if already initialized
