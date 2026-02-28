@@ -1,0 +1,38 @@
+## Memory Protocol
+
+Persistent memory lives in `.drevon/memory/`.
+**Read all memory files at the start of every session. Write to them after significant actions.**
+
+{{#ifEquals mode "hub"}}
+| File | Contains | When to update |
+|------|----------|----------------|
+| `.drevon/memory/user.md` | User preferences, feedback, decisions | When user expresses a preference |
+| `.drevon/memory/projects.md` | Registry of all workspace projects | When a project is created/updated/completed |
+| `.drevon/memory/systems.md` | Systems & infrastructure | When a new system is created or changed |
+| `.drevon/memory/log.md` | Chronological action log | After every significant action |
+
+### Write rules
+- `log.md` — append only, newest at bottom, format: `### YYYY-MM-DD — title`
+- `user.md` — update the relevant section in place
+- `projects.md` / `systems.md` — update the relevant entry or add a new one
+- Be specific and factual — memory should be useful to a future session with zero context
+{{else}}
+| File | Contains | When to update |
+|------|----------|----------------|
+| `.drevon/memory/context.md` | Project context, architecture, key files | When you learn new things about the codebase |
+| `.drevon/memory/decisions.md` | Technical decisions & rationale | When a significant technical decision is made |
+| `.drevon/memory/patterns.md` | Code patterns, conventions, gotchas | When patterns are discovered or established |
+| `.drevon/memory/log.md` | Chronological action log | After every significant action |
+
+### Write rules
+- `log.md` — append only, newest at bottom, format: `### YYYY-MM-DD — title`
+- `context.md` — update relevant sections in place as understanding grows
+- `decisions.md` — append new decisions, format: `### Decision: [title]` with Date, Context, Decision, Rationale
+- `patterns.md` — maintain as a living reference of code conventions
+- Be specific and factual — memory should be useful to a future session with zero context
+{{/ifEquals}}
+
+### Self-Evolution
+- After every significant action, write learnings back to memory
+- If you perform a multi-step workflow more than once, create a reusable prompt in `.drevon/prompts/`
+- Your goal is to become more effective with each session by building a knowledge base

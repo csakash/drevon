@@ -1,0 +1,12 @@
+{{#if workspace.enabled}}
+## Workspace Organization
+
+All work happens inside `{{workspace.directory}}/`.
+
+{{#if workspace.rules}}
+### Rules
+{{#each workspace.rules}}
+- {{this}}
+{{/each}}
+{{/if}}
+{{/if}}

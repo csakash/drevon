@@ -1,0 +1,158 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Drevon Configuration",
+  "description": "Configuration file for drevon — AI native workspace",
+  "type": "object",
+  "required": ["version", "mode", "name", "identity", "instructions", "agents", "memory", "skills", "prompts", "workspace"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema URL for IDE autocomplete"
+    },
+    "version": {
+      "type": "number",
+      "description": "Config version for migration support",
+      "default": 1
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["hub", "project"],
+      "description": "Workspace mode: hub (multi-project) or project (single codebase)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Workspace or project name"
+    },
+    "identity": {
+      "type": "object",
+      "required": ["role", "description", "posture", "capabilities"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "description": "Agent role identifier"
+        },
+        "description": {
+          "type": "string",
+          "description": "One-line description of the agent"
+        },
+        "posture": {
+          "type": "string",
+          "description": "Default operating style"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Domain areas the agent should focus on"
+        }
+      }
+    },
+    "instructions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "content"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique instruction identifier"
+          },
+          "title": {
+            "type": "string",
+            "description": "Human-readable title"
+          },
+          "alwaysApply": {
+            "type": "boolean",
+            "description": "If true, always included in agent context",
+            "default": false
+          },
+          "globs": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "File patterns this instruction applies to (for Cursor-style conditional rules)"
+          },
+          "content": {
+            "type": "string",
+            "description": "The instruction content (markdown)"
+          }
+        }
+      }
+    },
+    "agents": {
+      "type": "object",
+      "description": "Per-agent configuration",
+      "patternProperties": {
+        "^(copilot|claude|cursor|codex|windsurf|cline|aider|continue)$": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether this agent is enabled"
+            },
+            "extraInstructions": {
+              "type": "string",
+              "description": "Agent-specific additional instructions"
+            },
+            "allowedCommands": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Pre-approved commands (Claude Code)"
+            },
+            "config": {
+              "type": "object",
+              "description": "Agent-specific settings"
+            }
+          }
+        }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "required": ["enabled", "directory", "files"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "directory": { "type": "string" },
+        "files": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "customFiles": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "required": ["enabled", "directory", "lockFile"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "directory": { "type": "string" },
+        "lockFile": { "type": "string" },
+        "installed": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "prompts": {
+      "type": "object",
+      "required": ["enabled", "directory"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "directory": { "type": "string" }
+      }
+    },
+    "workspace": {
+      "type": "object",
+      "required": ["enabled"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "directory": { "type": "string" },
+        "rules": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

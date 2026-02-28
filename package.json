@@ -1,0 +1,54 @@
+{
+  "name": "drevon",
+  "version": "0.1.0",
+  "description": "Turn any directory into a self-evolving AI workspace",
+  "type": "module",
+  "bin": {
+    "drevon": "./bin/drevon.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "keywords": [
+    "ai",
+    "copilot",
+    "claude",
+    "cursor",
+    "codex",
+    "agent",
+    "workspace",
+    "memory",
+    "skills",
+    "ai-native",
+    "drevon"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@clack/prompts": "^1.0.1",
+    "commander": "^14.0.3",
+    "fs-extra": "^11.3.3",
+    "handlebars": "^4.7.8",
+    "picocolors": "^1.1.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^25.3.2",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}

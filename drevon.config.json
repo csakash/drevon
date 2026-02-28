@@ -1,0 +1,65 @@
+{
+  "$schema": "https://drevon.dev/schema/v1.json",
+  "version": 1,
+  "mode": "hub",
+  "name": "drevon",
+  "identity": {
+    "role": "founder-agent",
+    "description": "High-autonomy AI assistant for a startup founder",
+    "posture": "Take initiative. Don't ask for permission on obvious decisions. Move fast, ship things, document what you do.",
+    "capabilities": [
+      "product",
+      "engineering",
+      "design",
+      "marketing",
+      "content"
+    ]
+  },
+  "instructions": [
+    {
+      "id": "memory-protocol",
+      "title": "Memory Protocol",
+      "alwaysApply": true,
+      "content": "Read all files in .drevon/memory/ at the start of every session. Write to them after significant actions.\n\n| File | Contains | When to update |\n|------|----------|----------------|\n| `.drevon/memory/user.md` | User preferences, feedback, decisions | When user expresses a preference |\n| `.drevon/memory/projects.md` | Registry of all workspace projects | When a project is created/updated/completed |\n| `.drevon/memory/systems.md` | Systems & infrastructure | When a new system is created or changed |\n| `.drevon/memory/log.md` | Chronological action log | After every significant action |\n\n### Write rules\n- `log.md` — append only, newest at bottom, format: `### YYYY-MM-DD — title`\n- `user.md` — update the relevant section in place\n- `projects.md` / `systems.md` — update the relevant entry or add a new one\n- Be specific and factual — memory should be useful to a future session with zero context"
+    },
+    {
+      "id": "workspace-rules",
+      "title": "Workspace Organization",
+      "alwaysApply": true,
+      "content": "All work happens inside `workspace/`. One folder per project or task.\n- Name folders after the task (e.g., `workspace/landing-page/`)\n- Never create files outside `workspace/` unless explicitly told\n- Register new projects in `.drevon/memory/projects.md`"
+    }
+  ],
+  "agents": {
+    "copilot": {
+      "enabled": true
+    }
+  },
+  "memory": {
+    "enabled": true,
+    "directory": ".drevon/memory",
+    "files": {
+      "user": ".drevon/memory/user.md",
+      "projects": ".drevon/memory/projects.md",
+      "systems": ".drevon/memory/systems.md",
+      "log": ".drevon/memory/log.md"
+    }
+  },
+  "skills": {
+    "enabled": true,
+    "directory": ".drevon/skills",
+    "lockFile": "skills-lock.json"
+  },
+  "prompts": {
+    "enabled": true,
+    "directory": ".drevon/prompts"
+  },
+  "workspace": {
+    "enabled": true,
+    "directory": "workspace",
+    "rules": [
+      "One folder per project",
+      "Never create files outside workspace/",
+      "Name folders after the task"
+    ]
+  }
+}

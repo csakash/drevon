@@ -1,0 +1,17 @@
+{{#if skills.enabled}}
+## Installed Skills
+
+Skills live in `.drevon/skills/` and are managed via [skills.sh](https://skills.sh).
+
+{{#if installedSkills.length}}
+| Skill | What it does |
+|---|---|
+{{#each installedSkills}}
+| **{{this.name}}** | {{this.description}} |
+{{/each}}
+
+To use a skill, read its instructions from `.drevon/skills/{{name}}/SKILL.md`.
+{{else}}
+No skills installed yet. Install with: `drevon skill add <owner/repo>`
+{{/if}}
+{{/if}}

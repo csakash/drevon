@@ -1,0 +1,12 @@
+{
+  "skills": [
+    {
+      "name": "skills@frontend-design",
+      "description": "",
+      "source": "anthropics/skills@frontend-design",
+      "path": ".drevon/skills/skills@frontend-design",
+      "hash": "",
+      "installedAt": "2026-02-28T21:27:00.508Z"
+    }
+  ]
+}

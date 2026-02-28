@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.DS_Store
+*.tsbuildinfo
+
+# AI Native Workspace (drevon)
+.drevon/skills/*/node_modules/
+.aider.chat.history.md
+.aider.input.history
+.aider.tags.cache.v3/
+
+workspace
+
+.agents
