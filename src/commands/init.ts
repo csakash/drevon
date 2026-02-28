@@ -26,7 +26,7 @@ ${colors.yellow('  \\____||_|    |_____)  \\_/   \\___/ |_| |_|')}
 
   ${pc.dim('GitHub')}  ${colors.peach('https://github.com/csakash/drevon')}
   ${pc.dim('Web')}     ${colors.peach('https://drevon.trysudosu.com')}
-  ${pc.dim('Builder')} ${colors.peach('akash@trysudosu.com')} ${pc.dim('|')} ${colors.peach('@akashmunshi07')}
+  ${pc.dim('Builder')} ${colors.peach('akash@trysudosu.com')} ${pc.dim('|')} \x1b]8;;https://x.com/akashmunshi07\x07${colors.peach('@akashmunshi07')}\x1b]8;;\x07
 `;
 
 export async function initCommand(options: CLIOptions): Promise<void> {
