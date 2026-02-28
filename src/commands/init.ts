@@ -1,9 +1,11 @@
 import * as clack from '@clack/prompts';
+import pc from 'picocolors';
 import type { CLIOptions, InitOptions, AgentId } from '../types.js';
 import { configExists } from '../core/config.js';
 import { detectMode } from '../core/mode-detect.js';
 import { scaffold } from '../core/scaffolder.js';
 import { getProjectName } from '../utils/git.js';
+import { colors } from '../utils/logger.js';
 import {
   promptMode,
   promptName,
@@ -15,16 +17,16 @@ import {
 } from '../utils/prompts.js';
 
 const BANNER = `
-      _
-     | |
-   __| |  ____  _____  _   _   ___   ____
-  / _  | / ___)| ___ || | | | / _ \\ |  _ \\
- ( (_| || |    | ____| \\ V / | |_| || | | |
-  \\____||_|    |_____)  \\_/   \\___/ |_| |_|
+${colors.pink('      _')}
+${colors.pink('     | |')}
+${colors.rgb(253, 120, 118)('   __| |  ____  _____  _   _   ___   ____')}
+${colors.orange('  / _  | / ___)| ___ || | | | / _ \\ |  _ \\')}
+${colors.rgb(254, 184, 104)(' ( (_| || |    | ____| \\ V / | |_| || | | |')}
+${colors.yellow('  \\____||_|    |_____)  \\_/   \\___/ |_| |_|')}
 
-  GitHub:  https://github.com/csakash/drevon
-  Web:     https://drevon.trysudosu.com
-  Builder: akash@trysudosu.com | @akashmunshi07
+  ${pc.dim('GitHub')}  ${colors.peach('https://github.com/csakash/drevon')}
+  ${pc.dim('Web')}     ${colors.peach('https://drevon.trysudosu.com')}
+  ${pc.dim('Builder')} ${colors.peach('akash@trysudosu.com')} ${pc.dim('|')} ${colors.peach('@akashmunshi07')}
 `;
 
 export async function initCommand(options: CLIOptions): Promise<void> {

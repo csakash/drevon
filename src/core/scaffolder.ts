@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync, existsSync, copyFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import pc from 'picocolors';
 import type { InitOptions, AgentId } from '../types.js';
 import { createDefaultConfig, writeConfig } from './config.js';
 import { initMemory } from './memory.js';
@@ -8,6 +9,7 @@ import { initPrompts } from './prompts.js';
 import { compile } from './compiler.js';
 import { appendGitignore } from '../utils/git.js';
 import * as logger from '../utils/logger.js';
+import { colors } from '../utils/logger.js';
 
 function getBundledSkillPath(skillName: string, fileName: string): string | null {
   const __filename = fileURLToPath(import.meta.url);
@@ -135,15 +137,16 @@ export async function scaffold(dir: string, options: InitOptions): Promise<void>
   );
 
   console.log();
-  console.log('  Next steps:');
+  console.log(colors.orangeBold('  Next steps'));
+  console.log(pc.dim('  ─────────────────────────────────────'));
   if (mode === 'hub') {
-    console.log('  • Open this folder in VS Code, Cursor, or your IDE');
-    console.log('  • Or run `claude` / `codex` in your terminal');
+    console.log(`  ${pc.dim('›')} Open this folder in ${colors.yellow('VS Code')}, ${colors.yellow('Cursor')}, or your IDE`);
+    console.log(`  ${pc.dim('›')} Or run ${colors.yellow('claude')} / ${colors.yellow('codex')} in your terminal`);
   } else {
-    console.log('  • Your agent now has memory and custom instructions for this codebase');
-    console.log('  • Open in VS Code/Cursor or run `claude` / `codex`');
+    console.log(`  ${pc.dim('›')} Your agent now has ${colors.yellow('memory')} and ${colors.yellow('custom instructions')} for this codebase`);
+    console.log(`  ${pc.dim('›')} Open in ${colors.yellow('VS Code/Cursor')} or run ${colors.yellow('claude')} / ${colors.yellow('codex')}`);
   }
-  console.log('  • Edit drevon.config.json to customize, then run `drevon sync`');
-  console.log(`  • Agents configured: ${agentList}`);
+  console.log(`  ${pc.dim('›')} Edit ${colors.yellow('drevon.config.json')} to customize, then run ${colors.yellow('drevon sync')}`);
+  console.log(`  ${pc.dim('›')} Agents: ${colors.orangeBold(agentList)}`);
   console.log();
 }

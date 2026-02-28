@@ -1,10 +1,12 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, cpSync } from 'fs';
 import { join } from 'path';
 import { execSync } from 'child_process';
+import pc from 'picocolors';
 import { loadConfig, writeConfig } from '../core/config.js';
 import { compile } from '../core/compiler.js';
 import { migrateAgentsSkills } from '../core/skills.js';
 import * as logger from '../utils/logger.js';
+import { colors } from '../utils/logger.js';
 
 interface InstalledSkill {
   name: string;
@@ -199,10 +201,12 @@ export async function skillCommand(action: string, arg?: string, rawArgs?: strin
         return;
       }
       console.log();
-      console.log('  Installed skills:');
+      console.log(pc.dim('  ┌ ') + colors.orangeBold('Installed skills'));
+      console.log(pc.dim('  │'));
       for (const s of skills) {
-        console.log(`    • ${s.name} — ${s.description || s.source}`);
+        console.log(pc.dim('  │ ') + `${colors.orange('●')} ${colors.yellowBold(s.name)} ${pc.dim('—')} ${pc.dim(s.description || s.source)}`);
       }
+      console.log(pc.dim('  └'));
       console.log();
       break;
     }

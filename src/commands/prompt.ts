@@ -1,6 +1,8 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import pc from 'picocolors';
 import * as logger from '../utils/logger.js';
+import { colors } from '../utils/logger.js';
 
 export async function promptCommand(action: string, arg?: string): Promise<void> {
   const cwd = process.cwd();
@@ -23,15 +25,17 @@ export async function promptCommand(action: string, arg?: string): Promise<void>
       }
 
       console.log();
-      console.log('  Available prompts:');
+      console.log(pc.dim('  ┌ ') + colors.orangeBold('Available prompts'));
+      console.log(pc.dim('  │'));
       for (const file of files) {
         const content = readFileSync(join(promptsDir, file), 'utf-8');
         const titleMatch = content.match(/^title:\s*(.+)$/m);
         const descMatch = content.match(/^description:\s*(.+)$/m);
         const title = titleMatch ? titleMatch[1].trim() : file.replace('.md', '');
         const desc = descMatch ? descMatch[1].trim() : '';
-        console.log(`    • ${title}${desc ? ` — ${desc}` : ''}`);
+        console.log(pc.dim('  │ ') + `${colors.orange('●')} ${colors.yellowBold(title)}${desc ? ` ${pc.dim('—')} ${pc.dim(desc)}` : ''}`);
       }
+      console.log(pc.dim('  └'));
       console.log();
       break;
     }
