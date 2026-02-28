@@ -7,7 +7,7 @@ export interface InstalledSkill {
   installedAt: string;
 }
 
-import { existsSync, readFileSync, writeFileSync, readdirSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync, readdirSync, mkdirSync, cpSync } from 'fs';
 import { join } from 'path';
 
 export function readSkillsLock(dir: string): InstalledSkill[] {
@@ -15,7 +15,7 @@ export function readSkillsLock(dir: string): InstalledSkill[] {
   if (!existsSync(lockPath)) return [];
   try {
     const data = JSON.parse(readFileSync(lockPath, 'utf-8'));
-    return data.skills || [];
+    return Array.isArray(data.skills) ? data.skills : [];
   } catch {
     return [];
   }
@@ -56,4 +56,59 @@ export function scanSkills(dir: string): InstalledSkill[] {
   }
 
   return skills;
+}
+
+/**
+ * Migrate skills from .agents/skills/ to .drevon/skills/ and register in lock file.
+ * Returns names of migrated skills.
+ */
+export function migrateAgentsSkills(dir: string): string[] {
+  const agentsSkillsDir = join(dir, '.agents', 'skills');
+  if (!existsSync(agentsSkillsDir)) return [];
+
+  const entries = readdirSync(agentsSkillsDir, { withFileTypes: true });
+  const migrated: string[] = [];
+  const existing = readSkillsLock(dir);
+  let updated = false;
+
+  for (const entry of entries) {
+    if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
+
+    const drevonDest = join(dir, '.drevon', 'skills', entry.name);
+    const agentsSrc = join(agentsSkillsDir, entry.name);
+
+    // Copy to .drevon/skills/ if not already there
+    if (!existsSync(drevonDest)) {
+      mkdirSync(drevonDest, { recursive: true });
+      cpSync(agentsSrc, drevonDest, { recursive: true });
+    }
+
+    // Register in lock file if not already tracked
+    if (!existing.some((s) => s.name === entry.name)) {
+      let description = '';
+      const skillMd = join(drevonDest, 'SKILL.md');
+      if (existsSync(skillMd)) {
+        const content = readFileSync(skillMd, 'utf-8');
+        const match = content.match(/^description:\s*(.+)$/m);
+        if (match) description = match[1].trim();
+      }
+
+      existing.push({
+        name: entry.name,
+        description,
+        source: `.agents/skills/${entry.name}`,
+        path: `.drevon/skills/${entry.name}`,
+        hash: '',
+        installedAt: new Date().toISOString(),
+      });
+      updated = true;
+      migrated.push(entry.name);
+    }
+  }
+
+  if (updated) {
+    writeSkillsLock(dir, existing);
+  }
+
+  return migrated;
 }

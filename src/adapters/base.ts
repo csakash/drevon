@@ -77,11 +77,38 @@ export abstract class BaseAdapter {
 
   protected getSkillsSection(): string {
     if (!this.config.skills.enabled) return '';
-    return (
-      '## Installed Skills\n\n' +
-      'Skills live in `.drevon/skills/` and are managed via [skills.sh](https://skills.sh).\n' +
-      'No skills installed yet. Install with: `drevon skill add <owner/repo>`\n'
-    );
+
+    let content = '## Installed Skills\n\n';
+    content += '> **IMPORTANT:** To install new skills, always use `drevon skill add <source>` — do NOT use `npx skills add` directly.\n';
+    content += '> Drevon tracks skills in `.drevon/skills/` and keeps all agent configs in sync.\n\n';
+
+    // Read actual installed skills from lock file
+    const lockPath = join(process.cwd(), 'skills-lock.json');
+    let installedSkills: { name: string; description: string }[] = [];
+    if (existsSync(lockPath)) {
+      try {
+        const data = JSON.parse(readFileSync(lockPath, 'utf-8'));
+        if (Array.isArray(data.skills)) {
+          installedSkills = data.skills;
+        }
+      } catch {
+        // ignore parse errors
+      }
+    }
+
+    if (installedSkills.length > 0) {
+      content += '| Skill | Description |\n';
+      content += '|-------|-------------|\n';
+      for (const s of installedSkills) {
+        content += `| \`${s.name}\` | ${s.description || '—'} |\n`;
+      }
+      content += '\n';
+      content += 'Read each skill\'s SKILL.md in `.drevon/skills/<name>/` for detailed usage instructions.\n';
+    } else {
+      content += 'No skills installed yet. Install with: `drevon skill add <owner/repo/skill-name>`\n';
+    }
+
+    return content;
   }
 
   protected getWorkspaceSection(): string {

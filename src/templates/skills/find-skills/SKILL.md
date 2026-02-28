@@ -25,9 +25,9 @@ The Skills CLI (`npx skills`) is the package manager for the open agent skills e
 **Key commands:**
 
 - `npx skills find [query]` - Search for skills interactively or by keyword
-- `npx skills add <package>` - Install a skill from GitHub or other sources
-- `npx skills check` - Check for skill updates
-- `npx skills update` - Update all installed skills
+- `drevon skill add <owner/repo/skill-name>` - Install a skill (always use drevon, not npx skills add)
+- `drevon skill list` - List installed skills
+- `drevon skill sync` - Re-sync skills into agent configs
 
 **Browse skills at:** https://skills.sh/
 
@@ -60,18 +60,23 @@ For example:
 When you find relevant skills, present them to the user with:
 
 1. The skill name and what it does
-2. The install command they can run
+2. The install command using `drevon skill add`
 3. A link to learn more at skills.sh
 
 ### Step 4: Offer to Install
 
-If the user wants to proceed, you can install the skill for them:
+If the user wants to proceed, install the skill using drevon:
 
 ```bash
-npx skills add <owner/repo@skill> -g -y
+drevon skill add <owner/repo/skill-name>
 ```
 
-The `-g` flag installs globally (user-level) and `-y` skips confirmation prompts.
+For example:
+```bash
+drevon skill add vercel-labs/agent-skills/vercel-react-best-practices
+```
+
+**IMPORTANT:** Always use `drevon skill add`, NOT `npx skills add` directly. Drevon tracks skills in `.drevon/skills/` and keeps agent configs in sync.
 
 ## Common Skill Categories
 
@@ -92,3 +97,4 @@ If no relevant skills exist:
 1. Acknowledge that no existing skill was found
 2. Offer to help with the task directly using your general capabilities
 3. Suggest the user could create their own skill with `npx skills init`
+4. Remind them to always install via `drevon skill add` to keep configs in sync

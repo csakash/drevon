@@ -59,8 +59,14 @@ All work happens inside `workspace/`. One folder per project or task.
 
 ## Installed Skills
 
-Skills live in `.drevon/skills/` and are managed via [skills.sh](https://skills.sh).
-No skills installed yet. Install with: `drevon skill add <owner/repo>`
+> **IMPORTANT:** To install new skills, always use `drevon skill add <source>` — do NOT use `npx skills add` directly.
+> Drevon tracks skills in `.drevon/skills/` and keeps all agent configs in sync.
+
+| Skill | Description |
+|-------|-------------|
+| `copywriting` | When the user wants to write, rewrite, or improve marketing copy for any page — including homepage, landing pages, pricing pages, feature pages, about pages, or product pages. Also use when the user says "write copy for," "improve this copy," "rewrite this page," "marketing copy," "headline help," or "CTA copy." For email copy, see email-sequence. For popup copy, see popup-cro. |
+
+Read each skill's SKILL.md in `.drevon/skills/<name>/` for detailed usage instructions.
 
 ## Workspace Organization
 

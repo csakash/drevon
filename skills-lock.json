@@ -1,12 +1,12 @@
 {
   "skills": [
     {
-      "name": "skills@frontend-design",
-      "description": "",
-      "source": "anthropics/skills@frontend-design",
-      "path": ".drevon/skills/skills@frontend-design",
+      "name": "copywriting",
+      "description": "When the user wants to write, rewrite, or improve marketing copy for any page — including homepage, landing pages, pricing pages, feature pages, about pages, or product pages. Also use when the user says \"write copy for,\" \"improve this copy,\" \"rewrite this page,\" \"marketing copy,\" \"headline help,\" or \"CTA copy.\" For email copy, see email-sequence. For popup copy, see popup-cro.",
+      "source": "coreyhaines31/marketingskills/copywriting",
+      "path": ".drevon/skills/copywriting",
       "hash": "",
-      "installedAt": "2026-02-28T21:27:00.508Z"
+      "installedAt": "2026-02-28T22:12:13.666Z"
     }
   ]
 }

@@ -3,6 +3,7 @@ import { join } from 'path';
 import { execSync } from 'child_process';
 import { loadConfig, writeConfig } from '../core/config.js';
 import { compile } from '../core/compiler.js';
+import { migrateAgentsSkills } from '../core/skills.js';
 import * as logger from '../utils/logger.js';
 
 interface InstalledSkill {
@@ -207,6 +208,12 @@ export async function skillCommand(action: string, arg?: string, rawArgs?: strin
     }
 
     case 'sync': {
+      // Migrate .agents/skills/ → .drevon/skills/ if any exist
+      const migrated = migrateAgentsSkills(cwd);
+      for (const name of migrated) {
+        logger.info(`Migrated skill from .agents/skills/${name} → .drevon/skills/${name}`);
+      }
+
       try {
         const config = loadConfig(cwd);
         const result = compile(cwd, config);

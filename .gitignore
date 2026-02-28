@@ -5,6 +5,7 @@ dist/
 
 # AI Native Workspace (drevon)
 .drevon/skills/*/node_modules/
+.drevon/skills/*
 .aider.chat.history.md
 .aider.input.history
 .aider.tags.cache.v3/
@@ -12,3 +13,4 @@ dist/
 workspace
 
 .agents
+
