@@ -1,0 +1,78 @@
+---
+title: drevon add-agent / remove-agent
+description: Enable or disable individual agents.
+---
+
+## Add Agent
+
+### Usage
+
+```bash
+drevon add-agent <name>
+```
+
+### Description
+
+Enables a new agent in your workspace. Updates `drevon.config.json` and generates the agent's config file.
+
+### Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `name` | Agent ID: `copilot`, `claude`, `cursor`, `codex`, `windsurf`, `cline`, `aider`, `continue` |
+
+### Example
+
+```bash
+drevon add-agent cursor
+```
+
+This:
+1. Validates the agent name
+2. Sets `agents.cursor.enabled = true` in `drevon.config.json`
+3. For Claude, automatically adds default `allowedCommands`
+4. Runs `drevon sync` to generate the config file
+
+### Claude Special Handling
+
+When adding Claude, the adapter automatically configures `allowedCommands`:
+
+```json
+{
+  "agents": {
+    "claude": {
+      "enabled": true,
+      "allowedCommands": ["git", "npm", "npx", "node", "python3"]
+    }
+  }
+}
+```
+
+---
+
+## Remove Agent
+
+### Usage
+
+```bash
+drevon remove-agent <name>
+```
+
+### Description
+
+Disables an agent and removes its generated config files.
+
+### Example
+
+```bash
+drevon remove-agent windsurf
+```
+
+This:
+1. Calls the adapter's `clean()` method to delete generated files (e.g., `.windsurfrules`)
+2. Sets `agents.windsurf.enabled = false` in `drevon.config.json`
+3. Saves the updated config
+
+<Warning>
+  This permanently deletes the agent's config file. If you've made manual edits to it (against best practices), they will be lost.
+</Warning>

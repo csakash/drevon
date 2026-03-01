@@ -25,3 +25,7 @@ Chronological record of significant actions. Append only — never delete.
 ### 2026-02-28 — Installed copywriting skill from skills.sh
 **Action:** Found and installed `copywriting` skill from `coreyhaines31/marketingskills` (22.6K installs, #46 on skills.sh leaderboard). Installed via `drevon skill add` with symlink method, project scope.
 **Outcome:** Skill available at `.agents/skills/copywriting` and `.drevon/skills/copywriting/`. Covers conversion copywriting: headline formulas, CTA guidelines, page structure frameworks, writing style rules, and persuasion principles.
+
+### 2026-03-01 — Created Mintlify documentation site
+**Action:** Built complete production-ready Mintlify documentation for Drevon SDK in `docs/` directory. Deep-dived entire codebase (CLI, adapters, core modules, templates, presets, schema) to ensure accuracy.
+**Outcome:** 33 documentation pages across 6 sections: Get Started (intro, quickstart, install), Core Concepts (7 pages covering architecture, config, modes, identity, memory, skills, prompts), CLI Reference (10 pages for all commands), Agents (9 pages for all 8 supported agents), Guides (5 pages with tutorials and best practices), Reference (3 pages with schema, memory files, API). Includes mint.json config with Monokai Pro warm palette, tabbed navigation, SVG logos, and Mintlify-native components (Cards, Steps, Tabs, Accordions, CodeGroups, Callouts).

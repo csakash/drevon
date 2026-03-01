@@ -1,0 +1,53 @@
+---
+title: OpenAI Codex
+description: Drevon's adapter for OpenAI's Codex CLI agent.
+---
+
+## Overview
+
+OpenAI Codex CLI reads instructions from `AGENTS.md` in the repository root. Drevon generates this as a standard markdown file.
+
+## Output File
+
+```
+AGENTS.md
+```
+
+## Enabling
+
+```bash
+drevon add-agent codex
+```
+
+Or in `drevon.config.json`:
+
+```json
+{
+  "agents": {
+    "codex": {
+      "enabled": true
+    }
+  }
+}
+```
+
+## Agent-Specific Settings
+
+```json
+{
+  "agents": {
+    "codex": {
+      "enabled": true,
+      "extraInstructions": [
+        "Prefer simple solutions over clever ones",
+        "Always include error handling"
+      ]
+    }
+  }
+}
+```
+
+## Requirements
+
+- Codex CLI installed (`npm install -g @openai/codex`)
+- `AGENTS.md` in the repository root (Drevon handles this)

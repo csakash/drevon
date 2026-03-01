@@ -1,0 +1,103 @@
+---
+title: Introduction
+description: Turn any directory into a self-evolving AI workspace — memory, skills, and instructions for every coding agent.
+---
+
+```
+     _                                    
+    | |                                   
+  __| |  ____  _____  _   _   ___   ____  
+ / _  | / ___)| ___ || | | | / _ \ |  _ \ 
+( (_| || |    | ____| \ V / | |_| || | | |
+ \____||_|    |_____)  \_/   \___/ |_| |_|
+```
+
+## What is Drevon?
+
+Drevon is a CLI framework that transforms any directory into an **AI-native workspace**. One config file generates custom instructions for 8 different coding agents — with persistent memory, pluggable skills, and reusable prompts.
+
+Your AI agents stop being stateless tools and start becoming **self-evolving collaborators** that remember context, learn patterns, and improve across sessions.
+
+## The Problem
+
+Every AI coding agent uses a different config format:
+
+- Copilot reads `.github/copilot-instructions.md`
+- Claude Code reads `CLAUDE.md`
+- Cursor reads `.cursor/rules/*.mdc`
+- Codex reads `AGENTS.md`
+- And 4 more agents, each with their own format...
+
+Maintaining these manually is painful. When you switch agents or add a teammate who uses a different one, instructions get fragmented and context is lost between sessions.
+
+## The Solution
+
+<CardGroup cols={2}>
+  <Card title="Single Source of Truth" icon="file-code">
+    One `drevon.config.json` compiles into every agent's native format. Edit once, every agent stays in sync.
+  </Card>
+  <Card title="Persistent Memory" icon="brain">
+    Agents read and write to memory files across sessions — building context that compounds over time.
+  </Card>
+  <Card title="Pluggable Skills" icon="puzzle-piece">
+    Install capabilities from the [skills.sh](https://skills.sh) marketplace. Skills are automatically injected into all agent configs.
+  </Card>
+  <Card title="Reusable Prompts" icon="terminal">
+    Structured workflow templates for code review, debugging, feature implementation, and more.
+  </Card>
+</CardGroup>
+
+## How It Works
+
+```bash
+npx drevon init
+```
+
+This single command:
+
+<Steps>
+  <Step title="Detects your workspace">
+    Automatically determines whether you need Hub mode (multi-project) or Project mode (single codebase).
+  </Step>
+  <Step title="Configures your identity">
+    Choose a preset (founder, developer, team, researcher) that defines how agents behave.
+  </Step>
+  <Step title="Generates agent configs">
+    Creates native config files for every agent you enable — Copilot, Claude, Cursor, Codex, and more.
+  </Step>
+  <Step title="Sets up memory & skills">
+    Initializes the memory system and installs the bundled skill discovery tool.
+  </Step>
+</Steps>
+
+The result: a workspace where every AI agent knows who you are, what you're building, and how to help — and gets better at it over time.
+
+## Supported Agents
+
+| Agent | Config File | Format |
+|-------|-----------|--------|
+| **GitHub Copilot** | `.github/copilot-instructions.md` | Markdown |
+| **Claude Code** | `CLAUDE.md` | Markdown |
+| **Cursor** | `.cursor/rules/*.mdc` | MDC (YAML + Markdown) |
+| **OpenAI Codex** | `AGENTS.md` | Markdown |
+| **Windsurf** | `.windsurfrules` | Markdown |
+| **Cline** | `.clinerules` | Markdown |
+| **Aider** | `.aider/instructions.md` | Markdown + YAML |
+| **Continue.dev** | `.continue/rules/drevon.md` | Markdown |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Get up and running in 60 seconds.
+  </Card>
+  <Card title="Core Concepts" icon="book" href="/concepts/how-it-works">
+    Understand the architecture behind Drevon.
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/cli-reference/overview">
+    Complete reference for every command.
+  </Card>
+  <Card title="Guides" icon="map" href="/guides/first-workspace">
+    Step-by-step tutorials for common workflows.
+  </Card>
+</CardGroup>

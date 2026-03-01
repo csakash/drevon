@@ -1,0 +1,132 @@
+---
+title: Modes
+description: Hub mode vs Project mode — two ways to organize your AI workspace.
+---
+
+## Overview
+
+Drevon supports two workspace modes, each designed for a different workflow:
+
+| | Hub Mode | Project Mode |
+|---|---------|-------------|
+| **Best for** | Multi-project workspaces | Single codebases |
+| **Users** | Founders, researchers, generalists | Developers, teams |
+| **Memory** | Cross-project context | Project-scoped context |
+| **Workspace dir** | `workspace/` for projects | Not created |
+
+## Hub Mode
+
+Hub mode creates a **centralized workspace** where you manage multiple projects from a single directory. It's designed for people who context-switch between different projects and need their AI agents to maintain awareness across all of them.
+
+```bash
+npx drevon init --hub
+```
+
+### Directory Structure
+
+```
+my-workspace/
+├── drevon.config.json
+├── .drevon/
+│   ├── memory/
+│   │   ├── user.md          # Your preferences & decisions
+│   │   ├── projects.md      # Registry of all projects
+│   │   ├── systems.md       # Infrastructure & systems
+│   │   └── log.md           # Chronological action log
+│   ├── skills/
+│   └── prompts/
+├── workspace/
+│   ├── project-alpha/
+│   ├── project-beta/
+│   └── landing-page/
+├── .github/copilot-instructions.md
+├── CLAUDE.md
+└── AGENTS.md
+```
+
+### Memory Files
+
+| File | Purpose | Update When |
+|------|---------|-------------|
+| `user.md` | Your preferences, communication style, confirmed decisions | User expresses a preference |
+| `projects.md` | Registry of all workspace projects with status | Project created/updated/completed |
+| `systems.md` | Systems, infrastructure, and conventions | New system created or changed |
+| `log.md` | Chronological action log (append-only) | After every significant action |
+
+### Workspace Rules
+
+Hub mode includes a `workspace` section in the config that instructs agents to:
+- Keep projects organized in `workspace/` subdirectories
+- Name folders after the task
+- Never create files outside `workspace/` unless explicitly told
+- Register new projects in `projects.md`
+
+## Project Mode
+
+Project mode **embeds AI capabilities into an existing codebase**. It's designed for repositories where a team collaborates and needs consistent AI behavior without affecting the project structure.
+
+```bash
+cd my-app
+npx drevon init --project
+```
+
+### Directory Structure
+
+```
+my-app/
+├── src/                      # Existing code (untouched)
+├── package.json              # Existing config (untouched)
+├── drevon.config.json
+├── .drevon/
+│   ├── memory/
+│   │   ├── context.md        # Project architecture & overview
+│   │   ├── decisions.md      # ADR-style decision records
+│   │   ├── patterns.md       # Code patterns & conventions
+│   │   └── log.md            # Chronological action log
+│   ├── skills/
+│   └── prompts/
+├── .github/copilot-instructions.md
+├── CLAUDE.md
+└── AGENTS.md
+```
+
+### Memory Files
+
+| File | Purpose | Update When |
+|------|---------|-------------|
+| `context.md` | Project overview, architecture, key files, dependencies | Tech stack or architecture changes |
+| `decisions.md` | ADR-style decision records with context and rationale | Technical decision is made |
+| `patterns.md` | Code patterns, conventions, anti-patterns, testing patterns | New pattern established or changed |
+| `log.md` | Chronological action log (append-only) | After every significant action |
+
+<Tip>
+  Project mode's `decisions.md` follows the [ADR (Architecture Decision Records)](https://adr.github.io/) format — a proven practice for documenting technical decisions with context, options considered, and rationale.
+</Tip>
+
+## Auto-Detection
+
+When you run `drevon init` without `--hub` or `--project`, Drevon automatically suggests a mode:
+
+| Signal | Suggested Mode | Reason |
+|--------|---------------|--------|
+| Git repository detected | Project | Existing codebase |
+| `package.json` exists | Project | Node.js project |
+| `src/` directory exists | Project | Source code present |
+| `workspace/` exists | Hub | Hub structure detected |
+| Empty directory | Hub | Fresh workspace |
+
+You can always override the suggestion during the interactive wizard.
+
+## Switching Modes
+
+<Warning>
+  Switching modes after initialization requires re-running `drevon init` and will regenerate memory files. Back up any important memory content first.
+</Warning>
+
+To switch from hub to project mode (or vice versa):
+
+1. Back up `.drevon/memory/` if it contains important context
+2. Edit `mode` in `drevon.config.json`
+3. Update `memory.files` to match the new mode's file set
+4. Run `drevon sync`
+5. Manually create any missing memory files

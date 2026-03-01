@@ -1,0 +1,53 @@
+---
+title: Continue.dev
+description: Drevon's adapter for the Continue.dev VS Code/JetBrains extension.
+---
+
+## Overview
+
+Continue.dev reads rules from `.continue/rules/` directory. Drevon generates a single `drevon.md` file in this directory.
+
+## Output File
+
+```
+.continue/rules/drevon.md
+```
+
+## Enabling
+
+```bash
+drevon add-agent continue
+```
+
+Or in `drevon.config.json`:
+
+```json
+{
+  "agents": {
+    "continue": {
+      "enabled": true
+    }
+  }
+}
+```
+
+## Agent-Specific Settings
+
+```json
+{
+  "agents": {
+    "continue": {
+      "enabled": true,
+      "extraInstructions": [
+        "Leverage the codebase context window for understanding",
+        "Ask clarifying questions when requirements are ambiguous"
+      ]
+    }
+  }
+}
+```
+
+## Requirements
+
+- [Continue.dev](https://continue.dev) VS Code or JetBrains extension installed
+- `.continue/rules/` directory (Drevon handles this)

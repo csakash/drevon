@@ -1,0 +1,211 @@
+---
+title: Best Practices
+description: Tips and patterns for getting the most out of Drevon.
+---
+
+## Workspace Setup
+
+### Commit Generated Files
+
+Always commit both `drevon.config.json` and generated agent files to Git:
+
+```bash
+git add drevon.config.json .drevon/ skills-lock.json
+git add .github/ CLAUDE.md AGENTS.md .cursor/ .windsurfrules .clinerules
+```
+
+This ensures anyone cloning the repo gets the full AI workspace configuration without needing to run `drevon init`.
+
+### Use the Right Mode
+
+| Situation | Mode | Why |
+|-----------|------|-----|
+| New empty workspace | Hub | Cross-project memory, workspace organization |
+| Existing codebase | Project | Scoped memory, doesn't interfere with project |
+| Monorepo | Project | Treats the whole repo as one project |
+| Personal projects hub | Hub | One workspace for all your side projects |
+| Team repository | Project | Shared, committed config |
+
+### Choose the Right Preset
+
+| Situation | Preset | Why |
+|-----------|--------|-----|
+| Solo founder | Founder | Maximum autonomy, fast decisions |
+| IC developer | Developer | Code quality focus, asks before big changes |
+| Team project | Team | Documentation focus, follows standards |
+| Research work | Researcher | Thoroughness, citations, methodical |
+
+## Memory Best Practices
+
+### Keep Memory Files Accurate
+
+Memory is only useful if it's up to date. Periodically review:
+
+```bash
+cat .drevon/memory/user.md      # Still accurate?
+cat .drevon/memory/projects.md   # All projects listed?
+```
+
+### Seed Important Context
+
+Don't wait for agents to discover things — pre-populate memory with critical context:
+
+```markdown
+# context.md
+
+## Architecture
+This is a Next.js 15 app using the App Router. 
+Key directories:
+- app/ — Pages and API routes
+- lib/ — Shared utilities
+- components/ — React components
+
+## Dependencies
+- Prisma for database
+- NextAuth for authentication
+- Stripe for payments
+```
+
+### Let log.md Grow Naturally
+
+Don't prune `log.md` — it's designed to be append-only. Long logs help agents understand project history and trajectory.
+
+<Warning>
+  If `log.md` gets very large (10K+ lines), consider archiving old entries to a separate file and keeping recent history in the active log.
+</Warning>
+
+## Instructions Best Practices
+
+### Separate Concerns
+
+<CodeGroup>
+```json Good — Separated
+{
+  "instructions": [
+    {
+      "id": "code-style",
+      "title": "Code Style",
+      "content": "Use ESLint and Prettier. Never disable rules inline."
+    },
+    {
+      "id": "testing",
+      "title": "Testing",
+      "content": "Use vitest. 80% minimum coverage for new code."
+    },
+    {
+      "id": "git",
+      "title": "Git Workflow",
+      "content": "Conventional commits. Squash merge to main."
+    }
+  ]
+}
+```
+
+```json Bad — Monolithic
+{
+  "instructions": [
+    {
+      "id": "rules",
+      "title": "Rules",
+      "content": "Use ESLint and Prettier. Never disable rules inline. Use vitest. 80% minimum coverage. Conventional commits. Squash merge to main."
+    }
+  ]
+}
+```
+</CodeGroup>
+
+### Use Globs for Cursor Users
+
+If your team uses Cursor, take advantage of conditional rules:
+
+```json
+{
+  "id": "react-rules",
+  "title": "React Rules",
+  "content": "Server components by default. Minimize 'use client'.",
+  "globs": ["**/*.tsx"],
+  "alwaysApply": false
+}
+```
+
+### Reference Files, Don't Duplicate
+
+Instead of copying your style guide into instructions, reference it:
+
+```json
+{
+  "content": "Follow the coding standards in docs/STANDARDS.md. Read it before making changes."
+}
+```
+
+## Skills Best Practices
+
+### Start with Essentials
+
+Don't install every skill at once. Start with:
+1. `find-skills` (auto-installed)
+2. One or two skills relevant to your current work
+
+### Review Before Installing
+
+Always read a skill's description and SKILL.md before installing. Skills inject instructions into your agent configs, so review them for:
+- Compatibility with your existing instructions
+- Quality and accuracy of guidance
+- Potential conflicts with other skills
+
+### Keep the Lock File Committed
+
+`skills-lock.json` is your skill manifest. Commit it so teammates get the same skills.
+
+## Agent-Specific Tips
+
+### Claude — Configure allowedCommands
+
+Be intentional about what Claude can run autonomously:
+
+```json
+{
+  "agents": {
+    "claude": {
+      "allowedCommands": ["git", "npm", "npx", "node"]
+    }
+  }
+}
+```
+
+Only include commands you trust for autonomous execution.
+
+### Cursor — Use Multiple Rule Files
+
+Cursor's `.mdc` format shines with targeted rules. Create separate instructions for:
+- Frontend components (`.tsx` globs)
+- Backend logic (`.ts` globs in `api/`)
+- Test files (`.test.ts` globs)
+- Config files (`.config.*` globs)
+
+### Multi-Agent Workflows
+
+Use `extraInstructions` to give agent-specific guidance:
+
+```json
+{
+  "agents": {
+    "copilot": {
+      "extraInstructions": ["Focus on code completion quality"]
+    },
+    "claude": {
+      "extraInstructions": ["Explain reasoning before making changes"]
+    }
+  }
+}
+```
+
+## Sync Regularly
+
+Make `drevon sync` part of your workflow. Run it after:
+- Editing `drevon.config.json`
+- Installing or removing skills
+- Creating or deleting prompts
+- Pulling changes from teammates
+
+It's fast, idempotent, and only writes changed files.

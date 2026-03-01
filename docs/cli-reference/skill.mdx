@@ -1,0 +1,92 @@
+---
+title: drevon skill
+description: Install, remove, list, and sync skills from the skills.sh ecosystem.
+---
+
+## Usage
+
+```bash
+drevon skill <action> [arguments]
+```
+
+## Actions
+
+### skill add
+
+Install a skill from the [skills.sh](https://skills.sh) marketplace.
+
+```bash
+drevon skill add <source>
+```
+
+**Source formats:**
+
+| Format | Example |
+|--------|---------|
+| `owner/repo` | `drevon skill add browser-use/browser-use` |
+| `owner/repo/skill` | `drevon skill add coreyhaines31/marketingskills/copywriting` |
+| Pasted from skills.sh | `drevon skill add "npx skills add browser-use/browser-use --skill browser-use"` |
+
+**What happens:**
+1. Parses and sanitizes the source URL
+2. Checks if the skill is already installed
+3. Runs `npx -y skills add <repo>` to download
+4. Copies from `.agents/skills/` to `.drevon/skills/`
+5. Reads `SKILL.md` for description
+6. Updates `skills-lock.json`
+7. Runs `drevon sync` to inject into all agent configs
+
+<Tip>
+  You can paste install commands directly from skills.sh — Drevon strips the `npx skills add` prefix and `--skill` flags automatically.
+</Tip>
+
+---
+
+### skill remove
+
+Remove an installed skill.
+
+```bash
+drevon skill remove <name>
+```
+
+**Example:**
+```bash
+drevon skill remove browser-use
+```
+
+Deletes the skill directory, removes it from `skills-lock.json`, and recompiles all agent configs.
+
+---
+
+### skill list
+
+Show all installed skills.
+
+```bash
+drevon skill list
+```
+
+**Output:**
+```
+Installed skills:
+
+  find-skills     Helps users discover and install agent skills
+  browser-use     Control web browsers for research and testing
+  copywriting     Conversion copywriting guidelines
+```
+
+---
+
+### skill sync
+
+Re-sync skills into agent configs. Also migrates any skills from the legacy `.agents/skills/` directory to `.drevon/skills/`.
+
+```bash
+drevon skill sync
+```
+
+This is useful when:
+- Skills were installed outside of Drevon (e.g., via `npx skills add` directly)
+- You need to repair the skills-lock.json
+- Agent configs are out of sync with installed skills

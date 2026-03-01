@@ -1,0 +1,161 @@
+---
+title: Managing Skills
+description: How to discover, install, evaluate, and manage skills in your workspace.
+---
+
+## Finding Skills
+
+### Skills.sh Marketplace
+
+Browse the [skills.sh](https://skills.sh) marketplace for community-built skills. Skills are ranked by installs, and each listing shows compatibility, description, and install commands.
+
+### Using the Find-Skills Skill
+
+Every Drevon workspace comes with `find-skills` pre-installed. Simply ask your AI agent:
+
+> "Find me a skill for working with PDFs"
+
+The agent will search skills.sh and recommend relevant options.
+
+### By Category
+
+| Category | Popular Skills |
+|----------|---------------|
+| **Browser** | `browser-use/browser-use` |
+| **Documents** | `nicobailon/pdf` |
+| **Marketing** | `coreyhaines31/marketingskills` |
+| **Design** | `ui-ux-pro-max`, `tailwind-design-system` |
+| **Video** | `florentinmayer/remotion` |
+| **SEO** | `seo-audit` |
+
+## Installing Skills
+
+### Basic Install
+
+```bash
+drevon skill add browser-use/browser-use
+```
+
+### From Multi-Skill Repos
+
+Some repositories contain multiple skills:
+
+```bash
+# Install a specific skill from a multi-skill repo
+drevon skill add coreyhaines31/marketingskills/copywriting
+```
+
+### Copy-Paste from Skills.sh
+
+You can paste the full install command from the skills.sh website:
+
+```bash
+drevon skill add "npx skills add browser-use/browser-use --skill browser-use"
+```
+
+Drevon automatically sanitizes the input, stripping the `npx skills add` prefix and `--skill` flags.
+
+## Evaluating Skills
+
+Before installing a skill, consider:
+
+<AccordionGroup>
+  <Accordion title="Read the SKILL.md">
+    Every skill contains a `SKILL.md` that defines when it activates, what it does, and how it instructs the agent. Review this to ensure it aligns with your needs.
+  </Accordion>
+  <Accordion title="Check install count">
+    Skills with higher install counts on skills.sh are generally more reliable and well-maintained.
+  </Accordion>
+  <Accordion title="Test in isolation">
+    Install the skill, run `drevon sync`, then test with your agent to verify it works as expected before relying on it.
+  </Accordion>
+  <Accordion title="Watch for conflicts">
+    If two skills give conflicting instructions, agents may behave inconsistently. Review installed skills periodically for overlaps.
+  </Accordion>
+</AccordionGroup>
+
+## Removing Skills
+
+```bash
+drevon skill remove browser-use
+```
+
+This:
+1. Deletes `.drevon/skills/browser-use/`
+2. Removes from `skills-lock.json`
+3. Runs `drevon sync` to update all agent configs
+
+## Syncing After External Changes
+
+If you install a skill directly via `npx skills add` (not through Drevon), the skill lands in `.agents/skills/`. Run:
+
+```bash
+drevon skill sync
+```
+
+This migrates skills from `.agents/skills/` → `.drevon/skills/` and updates the lock file.
+
+## Skill Packs
+
+Drevon defines curated skill collections for quick setup:
+
+<Tabs>
+  <Tab title="Essentials">
+    Core capabilities every workspace should have:
+    - **browser-use** — Browser automation
+    - **pdf** — PDF reading
+    - **skill-creator** — Create custom skills
+  </Tab>
+  <Tab title="Web Dev">
+    Frontend development toolkit:
+    - **tailwind-design-system** — Tailwind CSS patterns
+    - **ui-ux-pro-max** — UI/UX best practices
+    - **web-design-guidelines** — Web design standards
+    - **seo-audit** — SEO analysis
+  </Tab>
+  <Tab title="Content">
+    Content creation tools:
+    - **copywriting** — Marketing copy
+    - **pptx** — Presentation generation
+    - **remotion-best-practices** — React video creation
+  </Tab>
+  <Tab title="AI Tools">
+    AI/ML integration:
+    - **agent-tools** — 150+ models via inference.sh
+  </Tab>
+</Tabs>
+
+<Info>
+  Skill packs are defined in the codebase and will be installable via a dedicated CLI command in a future release.
+</Info>
+
+## Creating Custom Skills
+
+A skill is just a directory with a `SKILL.md` file:
+
+```
+.drevon/skills/my-skill/
+└── SKILL.md
+```
+
+```markdown
+---
+name: my-skill
+description: Custom skill for my workflow
+---
+
+# My Custom Skill
+
+## When to Use
+Use this skill when the user asks about [specific topic].
+
+## Instructions
+1. Always check [specific thing] first
+2. Follow [specific pattern]
+3. Output in [specific format]
+
+## Examples
+...
+```
+
+After creating it, register in `skills-lock.json` or run `drevon skill sync`.

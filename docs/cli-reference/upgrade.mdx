@@ -1,0 +1,35 @@
+---
+title: drevon upgrade
+description: Migrate your config to the latest schema version.
+---
+
+## Usage
+
+```bash
+drevon upgrade
+```
+
+## Description
+
+Applies sequential migrations to bring your `drevon.config.json` from its current `version` to the latest schema version. Currently the latest version is `1`.
+
+## When to Use
+
+Run `drevon upgrade` after updating the Drevon CLI to a new major version that includes config schema changes. The command will:
+
+1. Read your current config
+2. Detect the version
+3. Apply any necessary migrations
+4. Write the updated config
+5. Prompt you to run `drevon sync` to regenerate agent configs
+
+## Current Status
+
+<Info>
+  The migration framework is in place but no migrations are needed yet (config version 1 is the latest). This command is infrastructure for future schema evolution.
+</Info>
+
+```bash
+$ drevon upgrade
+Config is already at the latest version (1).
+```

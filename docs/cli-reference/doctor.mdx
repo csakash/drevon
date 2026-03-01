@@ -1,0 +1,63 @@
+---
+title: drevon doctor
+description: Diagnose workspace issues and suggest fixes.
+---
+
+## Usage
+
+```bash
+drevon doctor
+```
+
+## Description
+
+Runs a comprehensive diagnostic check on your workspace, verifying that all expected files exist and are in good shape.
+
+## Checks Performed
+
+| Check | What It Verifies |
+|-------|-----------------|
+| **Agent configs** | Each enabled agent's output files exist on disk |
+| **Memory files** | All configured memory files are present |
+| **Skills lock** | `skills-lock.json` exists and is valid |
+| **Prompts directory** | `.drevon/prompts/` directory exists |
+
+## Output Example
+
+```
+  Running diagnostics...
+
+  Agents:
+    ✓ copilot — .github/copilot-instructions.md exists
+    ✓ claude — CLAUDE.md exists
+    ✗ cursor — .cursor/rules/core.mdc missing
+
+  Memory:
+    ✓ user.md exists
+    ✓ projects.md exists
+    ✓ systems.md exists
+    ✓ log.md exists
+
+  Skills:
+    ✓ skills-lock.json exists
+
+  Prompts:
+    ✓ .drevon/prompts/ exists
+
+  1 issue found. Run 'drevon sync' to fix.
+```
+
+## Fixing Issues
+
+Most issues can be resolved by running:
+
+```bash
+drevon sync
+```
+
+If files are missing from the memory system, you may need to re-initialize:
+
+```bash
+# Re-create memory files only
+drevon init
+```

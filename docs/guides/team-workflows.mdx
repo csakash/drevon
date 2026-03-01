@@ -1,0 +1,146 @@
+---
+title: Team Workflows
+description: Set up Drevon for teams where members use different AI agents.
+---
+
+## The Problem
+
+Your team uses different AI coding agents. Alice prefers Cursor, Bob uses Claude Code, and Charlie swears by Copilot. Each agent has its own config format, so you end up with fragmented, inconsistent instructions — or no shared instructions at all.
+
+## The Solution
+
+Drevon gives every team member the **same context** regardless of which agent they use. One config, every agent in sync.
+
+## Setting Up for a Team
+
+### 1. Initialize in Project Mode
+
+```bash
+cd your-team-repo
+npx drevon init --project --template team
+```
+
+The **team** preset configures agents with a collaborative posture:
+
+```json
+{
+  "identity": {
+    "role": "team-lead",
+    "description": "Collaborative development assistant for engineering teams",
+    "posture": "Document decisions. Maintain consistency. Follow team standards. Suggest improvements through proper channels.",
+    "capabilities": ["engineering", "architecture", "documentation", "mentoring"]
+  }
+}
+```
+
+### 2. Enable All Agents Your Team Uses
+
+```bash
+drevon add-agent copilot
+drevon add-agent claude
+drevon add-agent cursor
+drevon add-agent codex
+```
+
+Or enable them all at init:
+
+```bash
+npx drevon init --project --template team --agents copilot,claude,cursor,codex -y
+```
+
+### 3. Add Team-Specific Instructions
+
+Edit `drevon.config.json`:
+
+```json
+{
+  "instructions": [
+    {
+      "id": "code-style",
+      "title": "Code Style",
+      "content": "Follow the style guide in docs/CODE_STYLE.md. Use ESLint and Prettier configs without override. Variable names in camelCase, components in PascalCase.",
+      "alwaysApply": true
+    },
+    {
+      "id": "pr-workflow",
+      "title": "PR Workflow",
+      "content": "All changes go through PRs. Branch naming: feature/*, fix/*, chore/*. Require at least one review. Squash merge to main.",
+      "alwaysApply": true
+    },
+    {
+      "id": "testing-rules",
+      "title": "Testing Standards",
+      "content": "All new features require tests. Minimum 80% coverage for new code. Use vitest for unit tests, playwright for e2e.",
+      "globs": ["**/*.test.ts", "**/*.spec.ts", "tests/**"],
+      "alwaysApply": false
+    }
+  ]
+}
+```
+
+### 4. Commit Everything
+
+```bash
+git add drevon.config.json .drevon/ skills-lock.json
+git add .github/copilot-instructions.md CLAUDE.md AGENTS.md .cursor/
+git commit -m "chore: add Drevon AI workspace configuration"
+```
+
+<Tip>
+  Commit **both** the config file and the generated agent files. This way, team members get instructions immediately without needing to run `drevon sync` first.
+</Tip>
+
+## Team Workflow
+
+### When Updating Instructions
+
+```bash
+# 1. Edit the config
+vim drevon.config.json
+
+# 2. Regenerate all agent files
+drevon sync
+
+# 3. Commit everything
+git add -A && git commit -m "chore: update AI instructions"
+```
+
+### When a New Member Joins
+
+The new team member gets everything automatically when they clone the repo — all agent configs are already generated and committed.
+
+If they want to add their personal agent:
+
+```bash
+drevon add-agent windsurf
+# Don't commit this — it's personal
+```
+
+### Memory in Teams
+
+Project mode memory files (`context.md`, `decisions.md`, `patterns.md`, `log.md`) work well as shared team context:
+
+| File | Team Use |
+|------|----------|
+| `context.md` | Shared project overview — update during onboarding |
+| `decisions.md` | ADR records — commit these for transparency |
+| `patterns.md` | Team code conventions — evolve collaboratively |
+| `log.md` | Consider `.gitignore`-ing this for noisy workspaces |
+
+<Warning>
+  Memory files are designed for single-agent use. In team settings, be intentional about which memory files you commit. `decisions.md` and `patterns.md` work well as shared docs, while `log.md` can get noisy.
+</Warning>
+
+## Recommended .gitignore
+
+```gitignore
+# Drevon — commit these
+# drevon.config.json
+# .drevon/memory/context.md
+# .drevon/memory/decisions.md
+# .drevon/memory/patterns.md
+# skills-lock.json
+
+# Drevon — personal / noisy
+.drevon/memory/log.md
+```

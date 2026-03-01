@@ -1,0 +1,169 @@
+---
+title: Custom Instructions
+description: Write powerful, targeted instructions that make agents more effective.
+---
+
+## Overview
+
+Instructions are the rules that guide agent behavior. They live in the `instructions` array in `drevon.config.json` and are injected into every agent's config file.
+
+## Instruction Structure
+
+```json
+{
+  "instructions": [
+    {
+      "id": "unique-id",
+      "title": "Human-Readable Title",
+      "content": "The actual instruction text that agents will follow.",
+      "alwaysApply": true,
+      "globs": ["**/*.ts"]
+    }
+  ]
+}
+```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `id` | Yes | Unique identifier (kebab-case recommended) |
+| `title` | Yes | Display title |
+| `content` | Yes | The instruction text |
+| `alwaysApply` | No | Whether to always apply (default: `true`) |
+| `globs` | No | File patterns — used by Cursor for conditional rules |
+
+## Writing Effective Instructions
+
+### Be Specific and Actionable
+
+<CodeGroup>
+```json Good
+{
+  "id": "error-handling",
+  "title": "Error Handling",
+  "content": "Use custom error classes extending BaseError. Always include error codes. Log errors with structured JSON. Never catch and silently ignore exceptions."
+}
+```
+
+```json Bad
+{
+  "id": "errors",
+  "title": "Errors",
+  "content": "Handle errors properly."
+}
+```
+</CodeGroup>
+
+### Use Domain-Specific Rules
+
+```json
+{
+  "instructions": [
+    {
+      "id": "api-conventions",
+      "title": "API Conventions",
+      "content": "REST endpoints use kebab-case URLs. Always version APIs (/v1/). Return JSON with { data, error, meta } envelope. Use HTTP status codes correctly (201 for create, 204 for delete)."
+    },
+    {
+      "id": "database-rules",
+      "title": "Database Rules",
+      "content": "Use Prisma for all database access. Never write raw SQL in application code. All queries go through the repository layer. Use transactions for multi-step operations."
+    },
+    {
+      "id": "security",
+      "title": "Security Standards",
+      "content": "Validate all input with Zod schemas. Sanitize output to prevent XSS. Use parameterized queries (Prisma handles this). Never log sensitive data (passwords, tokens, PII)."
+    }
+  ]
+}
+```
+
+### Leverage Globs for Cursor
+
+Cursor's `.mdc` format supports conditional rules that only activate for specific file types:
+
+```json
+{
+  "instructions": [
+    {
+      "id": "react-components",
+      "title": "React Component Guidelines",
+      "content": "Use functional components only. Prefer composition over inheritance. Use forwardRef for reusable components. Co-locate styles, tests, and stories.",
+      "globs": ["**/*.tsx", "components/**"],
+      "alwaysApply": false
+    },
+    {
+      "id": "test-patterns",
+      "title": "Test Patterns",
+      "content": "Use AAA pattern (Arrange, Act, Assert). One assertion per test. Use descriptive test names. Mock external dependencies, not internal modules.",
+      "globs": ["**/*.test.ts", "**/*.spec.ts"],
+      "alwaysApply": false
+    },
+    {
+      "id": "config-files",
+      "title": "Config File Rules",
+      "content": "Add comments explaining non-obvious settings. Keep configs minimal. Don't duplicate defaults.",
+      "globs": ["*.config.*", ".*rc*"],
+      "alwaysApply": false
+    }
+  ]
+}
+```
+
+<Info>
+  Glob-targeted instructions generate separate `.mdc` files for Cursor. Other agents receive all instructions regardless of globs, since they don't support conditional activation.
+</Info>
+
+## Example: Full-Stack Project
+
+```json
+{
+  "instructions": [
+    {
+      "id": "memory-protocol",
+      "title": "Memory Protocol",
+      "content": "Read all files in .drevon/memory/ at the start of every session. Write to them after significant actions.",
+      "alwaysApply": true
+    },
+    {
+      "id": "tech-stack",
+      "title": "Tech Stack",
+      "content": "Next.js 15 (App Router), TypeScript strict mode, Tailwind CSS, Prisma ORM, PostgreSQL, Vercel deployment. Use these unless explicitly told otherwise.",
+      "alwaysApply": true
+    },
+    {
+      "id": "frontend-rules",
+      "title": "Frontend Rules",
+      "content": "Use server components by default. Only add 'use client' when interactivity is needed. Use next/image for all images. Keep pages thin — business logic in server actions or API routes.",
+      "globs": ["app/**", "components/**"],
+      "alwaysApply": false
+    },
+    {
+      "id": "backend-rules",
+      "title": "Backend Rules",
+      "content": "Route handlers in app/api/. Use Zod for request validation. Return consistent response shapes. Handle errors with try/catch and proper status codes.",
+      "globs": ["app/api/**", "lib/services/**"],
+      "alwaysApply": false
+    }
+  ]
+}
+```
+
+## Tips
+
+<AccordionGroup>
+  <Accordion title="Keep instructions focused">
+    Each instruction should cover one concern. Don't combine unrelated rules in a single instruction — use multiple instructions instead.
+  </Accordion>
+  <Accordion title="Reference existing docs">
+    If you have a style guide or architecture doc, reference its path:
+    ```
+    "content": "Follow the architecture described in docs/ARCHITECTURE.md. Read it before making structural changes."
+    ```
+  </Accordion>
+  <Accordion title="Use memory for evolving context">
+    Static instructions go in `instructions`. Dynamic, evolving context belongs in memory files. Use instructions for rules, memory for state.
+  </Accordion>
+  <Accordion title="Don't over-constrain">
+    Too many rigid rules make agents less useful. Focus on the important guardrails and let agents use their judgment for the rest.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,233 @@
+---
+title: Programmatic API
+description: Use Drevon programmatically in your own tools and scripts.
+---
+
+## Overview
+
+Drevon exports its core functions as a public API, allowing you to integrate it into custom tools, CI/CD pipelines, and scripts.
+
+## Installation
+
+```bash
+npm install drevon
+```
+
+## Exports
+
+```typescript
+import {
+  // Types
+  DrevonConfig,
+  DrevonMode,
+  AgentId,
+  InitOptions,
+  
+  // Config management
+  loadConfig,
+  writeConfig,
+  createDefaultConfig,
+  
+  // Core operations
+  compile,
+  scaffold,
+  detectMode,
+} from 'drevon';
+```
+
+## Functions
+
+### loadConfig
+
+Load and validate a Drevon config from a directory.
+
+```typescript
+import { loadConfig } from 'drevon';
+
+const config = await loadConfig('/path/to/workspace');
+console.log(config.mode); // 'hub' | 'project'
+console.log(config.identity.role); // 'founder-agent'
+```
+
+**Parameters:**
+| Param | Type | Description |
+|-------|------|-------------|
+| `dir` | `string` | Path to directory containing `drevon.config.json` |
+
+**Returns:** `Promise<DrevonConfig>`
+
+**Throws:** If config is missing or invalid (Zod validation).
+
+---
+
+### writeConfig
+
+Write a config object to `drevon.config.json`.
+
+```typescript
+import { writeConfig } from 'drevon';
+
+await writeConfig('/path/to/workspace', config);
+```
+
+**Parameters:**
+| Param | Type | Description |
+|-------|------|-------------|
+| `dir` | `string` | Target directory |
+| `config` | `DrevonConfig` | Config object to write |
+
+---
+
+### createDefaultConfig
+
+Generate a default config for a given mode and identity.
+
+```typescript
+import { createDefaultConfig } from 'drevon';
+
+const config = createDefaultConfig(
+  'hub',
+  'my-workspace',
+  {
+    role: 'founder-agent',
+    description: 'High-autonomy assistant',
+    posture: 'Move fast, ship things.',
+    capabilities: ['engineering', 'product'],
+  },
+  { copilot: true, claude: true }
+);
+```
+
+**Parameters:**
+| Param | Type | Description |
+|-------|------|-------------|
+| `mode` | `DrevonMode` | `'hub'` or `'project'` |
+| `name` | `string` | Workspace/project name |
+| `identity` | `IdentityConfig` | Identity configuration |
+| `agents` | `Record<string, boolean>` | Agents to enable |
+
+**Returns:** `DrevonConfig`
+
+---
+
+### compile
+
+Compile config into agent-specific files. Only writes changed files.
+
+```typescript
+import { compile, loadConfig } from 'drevon';
+
+const config = await loadConfig('./');
+const result = await compile('./', config);
+
+console.log(result.created);   // ['CLAUDE.md']
+console.log(result.updated);   // ['.github/copilot-instructions.md']
+console.log(result.unchanged); // ['.cursor/rules/core.mdc']
+```
+
+**Parameters:**
+| Param | Type | Description |
+|-------|------|-------------|
+| `dir` | `string` | Workspace directory |
+| `config` | `DrevonConfig` | Loaded config |
+
+**Returns:** `Promise<CompileResult>`
+
+```typescript
+interface CompileResult {
+  created: string[];
+  updated: string[];
+  unchanged: string[];
+}
+```
+
+---
+
+### scaffold
+
+Run the full initialization sequence (what `drevon init` does).
+
+```typescript
+import { scaffold } from 'drevon';
+
+await scaffold('/path/to/workspace', {
+  mode: 'hub',
+  name: 'my-workspace',
+  identity: { role: 'founder-agent', /* ... */ },
+  agents: { copilot: true, claude: true },
+  memory: true,
+  prompts: true,
+  starterPrompts: true,
+});
+```
+
+---
+
+### detectMode
+
+Auto-detect whether a directory should be hub or project mode.
+
+```typescript
+import { detectMode } from 'drevon';
+
+const { suggested, reason } = await detectMode('/path/to/dir');
+console.log(suggested); // 'project'
+console.log(reason);    // 'Git repository detected'
+```
+
+**Returns:** `{ suggested: DrevonMode, reason: string }`
+
+## Types
+
+### DrevonConfig
+
+```typescript
+interface DrevonConfig {
+  $schema?: string;
+  version: number;
+  mode: DrevonMode;
+  name: string;
+  identity: IdentityConfig;
+  instructions?: Instruction[];
+  agents: Record<AgentId, AgentConfig>;
+  memory: MemoryConfig;
+  skills: SkillsConfig;
+  prompts: PromptsConfig;
+  workspace?: WorkspaceConfig;
+}
+```
+
+### AgentId
+
+```typescript
+type AgentId = 
+  | 'copilot' | 'claude' | 'cursor' | 'codex'
+  | 'windsurf' | 'cline' | 'aider' | 'continue';
+```
+
+### DrevonMode
+
+```typescript
+type DrevonMode = 'hub' | 'project';
+```
+
+## Usage in CI/CD
+
+Example: validate config in a GitHub Action:
+
+```yaml
+- name: Validate Drevon Config
+  run: |
+    node -e "
+      import { loadConfig } from 'drevon';
+      await loadConfig('.');
+      console.log('Config valid');
+    "
+```
+
+Example: auto-sync on config changes:
+
+```yaml
+- name: Sync Agent Configs
+  run: npx drevon sync
+```

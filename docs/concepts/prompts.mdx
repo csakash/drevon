@@ -1,0 +1,166 @@
+---
+title: Prompts
+description: Reusable workflow templates that guide agents through structured tasks.
+---
+
+## Overview
+
+Prompts are reusable workflow templates stored in `.drevon/prompts/`. They provide structured, step-by-step guidance for common development tasks like code review, debugging, and feature implementation.
+
+## How Prompts Work
+
+Prompts are markdown files with YAML frontmatter. When prompts are enabled, agents are informed about available prompts and can reference them when a matching task arises.
+
+```markdown
+---
+title: Code Review
+description: Thorough code review checklist covering correctness, security, and performance
+tags: [review, quality]
+---
+
+## Workflow
+
+1. **Understand** — Read the code and understand its purpose
+2. **Correctness** — Verify logic, edge cases, error handling
+3. **Security** — Check for vulnerabilities, input validation
+...
+```
+
+## Starter Prompts
+
+When you run `drevon init` and opt into starter prompts, you get 5 production-ready templates:
+
+<AccordionGroup>
+  <Accordion title="Code Review" icon="magnifying-glass">
+    A 7-section code review checklist:
+    1. **Understanding** — Read and understand the code's purpose
+    2. **Correctness** — Verify logic and edge cases
+    3. **Security** — Check for vulnerabilities
+    4. **Performance** — Identify bottlenecks
+    5. **Readability** — Assess code clarity
+    6. **Testing** — Evaluate test coverage
+    7. **Documentation** — Check docs and comments
+  </Accordion>
+  <Accordion title="Debug" icon="bug">
+    A 7-step debugging workflow:
+    1. **Reproduce** — Confirm the exact issue
+    2. **Isolate** — Narrow down the cause
+    3. **Understand** — Analyze the root cause
+    4. **Hypothesize** — Form a theory
+    5. **Fix** — Implement the solution
+    6. **Verify** — Confirm the fix works
+    7. **Document** — Record the issue and fix
+  </Accordion>
+  <Accordion title="New Feature" icon="plus">
+    A 7-step feature implementation workflow:
+    1. **Requirements** — Clarify what needs to be built
+    2. **Design** — Plan the architecture
+    3. **Plan** — Break into tasks
+    4. **Implement** — Write the code
+    5. **Test** — Verify correctness
+    6. **Review** — Self-review before submission
+    7. **Document** — Update docs and changelog
+  </Accordion>
+  <Accordion title="Refactor" icon="wrench">
+    A 7-step safe refactoring methodology:
+    1. **Identify** — Find the code smell or issue
+    2. **Safety Net** — Ensure tests exist
+    3. **Plan** — Define the refactoring strategy
+    4. **Execute Incrementally** — Small, testable steps
+    5. **Common Refactors** — Pattern-specific guidance
+    6. **Verify** — Run tests after each step
+    7. **Document** — Record what changed and why
+  </Accordion>
+  <Accordion title="Write Tests" icon="flask-vial">
+    A 7-section test writing methodology:
+    1. **Identify** — What needs tests
+    2. **AAA Structure** — Arrange, Act, Assert pattern
+    3. **Happy Path** — Standard use cases
+    4. **Edge Cases** — Boundary conditions
+    5. **Error Paths** — Failure scenarios
+    6. **Organization** — Test structure and naming
+    7. **Avoid Mistakes** — Common testing anti-patterns
+  </Accordion>
+</AccordionGroup>
+
+## Creating Custom Prompts
+
+### Via CLI
+
+```bash
+drevon prompt create my-workflow
+```
+
+This creates a scaffolded prompt at `.drevon/prompts/my-workflow.md`:
+
+```markdown
+---
+title: My Workflow
+description: ""
+tags: []
+---
+
+## Steps
+
+1.
+```
+
+### Manual Creation
+
+Create any `.md` file in `.drevon/prompts/`:
+
+```markdown
+---
+title: API Endpoint
+description: Step-by-step guide for creating a new REST API endpoint
+tags: [api, backend, rest]
+---
+
+## Workflow
+
+### 1. Define the Route
+- Choose RESTful path and HTTP method
+- Define request/response schemas with Zod
+
+### 2. Implement Controller
+- Parse and validate input
+- Call service layer
+- Return structured response
+
+### 3. Add Tests
+- Unit test the service logic
+- Integration test the endpoint
+- Test error cases
+```
+
+## Listing Prompts
+
+```bash
+drevon prompt list
+```
+
+Output:
+```
+Available prompts:
+
+  code-review     Thorough code review checklist
+  debug           Structured debugging workflow
+  new-feature     Feature implementation guide
+  refactor        Safe refactoring methodology
+  write-tests     Test writing methodology
+  api-endpoint    Step-by-step guide for creating a new REST API endpoint
+```
+
+## Prompt Index
+
+Drevon auto-generates a `.drevon/prompts/_index.md` file — a table of contents linking to all available prompts with their titles and descriptions. This index is regenerated whenever you create or delete prompts.
+
+## Self-Evolution Through Prompts
+
+One of Drevon's key principles is **self-evolution**: agents are instructed to create new prompts when they notice they're performing the same multi-step workflow repeatedly.
+
+For example, if you frequently ask an agent to set up a new React component with tests and Storybook, the agent should eventually create a `new-component.md` prompt that captures that workflow — making future instances faster and more consistent.
+
+<Tip>
+  Review `.drevon/prompts/` periodically to see what workflows your agents have created. You may find useful patterns you didn't explicitly design.
+</Tip>

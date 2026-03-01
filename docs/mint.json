@@ -1,0 +1,134 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Drevon",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#FF6188",
+    "light": "#FF6188",
+    "dark": "#FF6188"
+  },
+  "topbarLinks": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/akashmunshi/drevon"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "https://www.npmjs.com/package/drevon"
+  },
+  "tabs": [
+    {
+      "name": "CLI Reference",
+      "url": "cli-reference"
+    },
+    {
+      "name": "Agents",
+      "url": "agents"
+    },
+    {
+      "name": "Guides",
+      "url": "guides"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "NPM Package",
+      "icon": "npm",
+      "url": "https://www.npmjs.com/package/drevon"
+    },
+    {
+      "name": "Skills Marketplace",
+      "icon": "puzzle-piece",
+      "url": "https://skills.sh"
+    },
+    {
+      "name": "Community",
+      "icon": "discord",
+      "url": "https://discord.gg/drevon"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "installation"
+      ]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": [
+        "concepts/how-it-works",
+        "concepts/configuration",
+        "concepts/modes",
+        "concepts/identity-presets",
+        "concepts/memory-system",
+        "concepts/skills",
+        "concepts/prompts"
+      ]
+    },
+    {
+      "group": "Reference",
+      "pages": [
+        "reference/config-schema",
+        "reference/memory-files",
+        "reference/api"
+      ]
+    },
+    {
+      "group": "CLI Reference",
+      "pages": [
+        "cli-reference/overview",
+        "cli-reference/init",
+        "cli-reference/sync",
+        "cli-reference/status",
+        "cli-reference/doctor",
+        "cli-reference/add-agent",
+        "cli-reference/skill",
+        "cli-reference/prompt",
+        "cli-reference/upgrade"
+      ]
+    },
+    {
+      "group": "Agents",
+      "pages": [
+        "agents/overview",
+        "agents/github-copilot",
+        "agents/claude-code",
+        "agents/cursor",
+        "agents/openai-codex",
+        "agents/windsurf",
+        "agents/cline",
+        "agents/aider",
+        "agents/continue"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/first-workspace",
+        "guides/team-workflows",
+        "guides/custom-instructions",
+        "guides/managing-skills",
+        "guides/best-practices"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/akashmunshi/drevon",
+    "x": "https://x.com/drevondev"
+  },
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true
+  },
+  "modeToggle": {
+    "default": "dark"
+  }
+}

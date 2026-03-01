@@ -1,0 +1,49 @@
+---
+title: drevon status
+description: Show a comprehensive workspace status dashboard.
+---
+
+## Usage
+
+```bash
+drevon status
+```
+
+## Description
+
+Displays a styled dashboard showing the complete state of your Drevon workspace, including mode, identity, agents (with health checks), memory files, skills, and prompts.
+
+## Output Example
+
+```
+╭─────────────────────────────────────╮
+│         drevon workspace            │
+╰─────────────────────────────────────╯
+
+  Mode:     hub
+  Name:     my-workspace
+  Identity: founder-agent
+
+  Agents:
+    ✓ copilot   .github/copilot-instructions.md
+    ✓ claude    CLAUDE.md
+    ✓ cursor    .cursor/rules/core.mdc
+    ✗ codex     (disabled)
+
+  Memory:
+    ✓ user.md
+    ✓ projects.md
+    ✓ systems.md
+    ✓ log.md
+
+  Skills: 3 installed
+    • find-skills
+    • browser-use
+    • copywriting
+
+  Prompts: 5 available
+```
+
+## Health Checks
+
+The status command runs `diagnose()` on each enabled agent's adapter to verify that expected config files exist on disk. A `✓` means the file exists; `✗` means it's missing (run `drevon sync` to fix).

@@ -1,0 +1,76 @@
+---
+title: Aider
+description: Drevon's adapter for the Aider pair programming tool.
+---
+
+## Overview
+
+Aider reads instructions from `.aider/instructions.md`. Drevon's Aider adapter is unique because it can also generate an **optional YAML config file** (`.aider.conf.yml`) alongside the markdown instructions.
+
+## Output Files
+
+```
+.aider/
+├── instructions.md      # Always generated
+└── .aider.conf.yml      # Optional, if config is specified
+```
+
+## Enabling
+
+```bash
+drevon add-agent aider
+```
+
+## Agent-Specific Settings
+
+### Basic
+
+```json
+{
+  "agents": {
+    "aider": {
+      "enabled": true,
+      "extraInstructions": [
+        "Always create a commit after each change",
+        "Use conventional commit messages"
+      ]
+    }
+  }
+}
+```
+
+### With YAML Config
+
+Aider supports a `config` field that generates `.aider.conf.yml`:
+
+```json
+{
+  "agents": {
+    "aider": {
+      "enabled": true,
+      "config": {
+        "model": "claude-3-opus",
+        "auto-commits": true,
+        "dark-mode": true
+      }
+    }
+  }
+}
+```
+
+This generates `.aider.conf.yml`:
+
+```yaml
+model: claude-3-opus
+auto-commits: true
+dark-mode: true
+```
+
+<Info>
+  Aider is the only agent that supports a `config` field, as it's the only one that uses a separate YAML configuration file in addition to markdown instructions.
+</Info>
+
+## Requirements
+
+- [Aider](https://aider.chat) installed (`pip install aider-chat`)
+- `.aider/instructions.md` in the repository root (Drevon handles this)

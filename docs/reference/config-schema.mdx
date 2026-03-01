@@ -1,0 +1,187 @@
+---
+title: Config Schema
+description: Complete JSON Schema reference for drevon.config.json.
+---
+
+## Overview
+
+The `drevon.config.json` file is validated at runtime using Zod schemas and at edit-time using JSON Schema. You can enable editor autocompletion by adding the `$schema` field.
+
+## Using the Schema
+
+Add this to the top of your `drevon.config.json`:
+
+```json
+{
+  "$schema": "https://drevon.dev/schema/v1.json"
+}
+```
+
+This enables autocompletion and validation in VS Code, WebStorm, and other JSON Schema-aware editors.
+
+## Full Schema
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Drevon Config",
+  "type": "object",
+  "required": ["version", "mode", "name"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": {
+      "type": "number",
+      "description": "Config schema version",
+      "const": 1
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["hub", "project"],
+      "description": "Workspace mode"
+    },
+    "name": {
+      "type": "string",
+      "description": "Workspace or project name"
+    },
+    "identity": {
+      "type": "object",
+      "required": ["role", "description", "posture"],
+      "properties": {
+        "role": { "type": "string" },
+        "description": { "type": "string" },
+        "posture": { "type": "string" },
+        "capabilities": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "instructions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "content"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "content": { "type": "string" },
+          "alwaysApply": { "type": "boolean" },
+          "globs": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "agents": {
+      "type": "object",
+      "patternProperties": {
+        "^(copilot|claude|cursor|codex|windsurf|cline|aider|continue)$": {
+          "type": "object",
+          "required": ["enabled"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "extraInstructions": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "allowedCommands": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "config": { "type": "object" }
+          }
+        }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "directory": { "type": "string" },
+        "files": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "customFiles": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "directory": { "type": "string" },
+        "lockFile": { "type": "string" }
+      }
+    },
+    "prompts": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "directory": { "type": "string" }
+      }
+    },
+    "workspace": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "directory": { "type": "string" },
+        "rules": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}
+```
+
+## Zod Schema (Runtime)
+
+At runtime, Drevon validates configs using Zod for precise error messages:
+
+```typescript
+const ConfigSchema = z.object({
+  $schema: z.string().optional(),
+  version: z.number(),
+  mode: z.enum(['hub', 'project']),
+  name: z.string(),
+  identity: z.object({
+    role: z.string(),
+    description: z.string(),
+    posture: z.string(),
+    capabilities: z.array(z.string()).optional(),
+  }),
+  instructions: z.array(z.object({
+    id: z.string(),
+    title: z.string(),
+    content: z.string(),
+    alwaysApply: z.boolean().optional(),
+    globs: z.array(z.string()).optional(),
+  })).optional(),
+  agents: z.record(z.object({
+    enabled: z.boolean(),
+    extraInstructions: z.array(z.string()).optional(),
+    allowedCommands: z.array(z.string()).optional(),
+    config: z.record(z.any()).optional(),
+  })),
+  memory: z.object({ ... }),
+  skills: z.object({ ... }),
+  prompts: z.object({ ... }),
+  workspace: z.object({ ... }).optional(),
+});
+```
+
+## Validation Errors
+
+If your config is invalid, Drevon provides clear error messages:
+
+```bash
+$ drevon sync
+Error: Invalid config:
+  - identity.role: Required
+  - agents.copilot.enabled: Expected boolean, received string
+```

@@ -1,0 +1,115 @@
+---
+title: Installation
+description: Install Drevon globally or use it with npx.
+---
+
+## Requirements
+
+- **Node.js** ≥ 18.0.0
+- **npm**, **yarn**, or **pnpm** package manager
+
+<Info>
+  Drevon is a CLI tool with zero runtime dependencies in your project. It generates static config files that agents read natively.
+</Info>
+
+## Install Methods
+
+<Tabs>
+  <Tab title="npx (Recommended)">
+    Run without installing — always uses the latest version:
+
+    ```bash
+    npx drevon init
+    ```
+
+    This is the recommended approach for getting started. No global install needed.
+  </Tab>
+  <Tab title="Global Install">
+    Install globally for faster access:
+
+    ```bash
+    npm install -g drevon
+    ```
+
+    Then use directly:
+
+    ```bash
+    drevon init
+    drevon sync
+    drevon status
+    ```
+  </Tab>
+  <Tab title="Project Dev Dependency">
+    Add to an existing project's dev dependencies:
+
+    ```bash
+    npm install --save-dev drevon
+    ```
+
+    Then use via `npx` or add scripts to `package.json`:
+
+    ```json
+    {
+      "scripts": {
+        "ai:sync": "drevon sync",
+        "ai:status": "drevon status",
+        "ai:doctor": "drevon doctor"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Verify Installation
+
+```bash
+drevon --version
+# 0.1.0
+
+drevon --help
+```
+
+## Upgrading
+
+<Tabs>
+  <Tab title="npx">
+    `npx` always fetches the latest version. No action needed.
+  </Tab>
+  <Tab title="Global">
+    ```bash
+    npm update -g drevon
+    ```
+  </Tab>
+  <Tab title="Dev Dependency">
+    ```bash
+    npm update drevon
+    ```
+  </Tab>
+</Tabs>
+
+After upgrading, run `drevon upgrade` to migrate your config if needed, then `drevon sync` to regenerate agent files:
+
+```bash
+drevon upgrade
+drevon sync
+```
+
+## Uninstalling
+
+To remove Drevon from a workspace, delete the generated files:
+
+```bash
+# Remove Drevon config and data
+rm -rf drevon.config.json .drevon/ skills-lock.json
+
+# Remove generated agent configs (be careful if you've customized these)
+rm -f .github/copilot-instructions.md CLAUDE.md AGENTS.md
+rm -rf .cursor/rules/ .windsurfrules .clinerules
+rm -rf .aider/ .continue/rules/drevon.md
+```
+
+To uninstall the global CLI:
+
+```bash
+npm uninstall -g drevon
+```

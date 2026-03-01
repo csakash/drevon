@@ -1,0 +1,141 @@
+---
+title: Quickstart
+description: Get your first AI-native workspace running in 60 seconds.
+---
+
+## Prerequisites
+
+- **Node.js** ≥ 18.0.0
+- Any supported AI coding agent installed
+
+## Create Your First Workspace
+
+<Tabs>
+  <Tab title="Hub Mode">
+    Hub mode is for founders, researchers, and generalists managing multiple projects from one workspace.
+
+    ```bash
+    mkdir my-workspace && cd my-workspace
+    npx drevon init
+    ```
+
+    The interactive wizard will guide you through:
+    1. **Mode** — automatically detected as Hub (empty directory)
+    2. **Name** — your workspace name
+    3. **Identity** — choose a preset (founder, developer, team, researcher)
+    4. **Agents** — select which agents to configure
+    5. **Memory** — enable persistent cross-session memory
+    6. **Prompts** — optionally install starter workflow templates
+  </Tab>
+  <Tab title="Project Mode">
+    Project mode embeds AI capabilities into an existing codebase.
+
+    ```bash
+    cd my-existing-project
+    npx drevon init
+    ```
+
+    Drevon detects your project (git repo, `package.json`, `src/` folder) and configures accordingly. Your existing code is never modified.
+  </Tab>
+  <Tab title="Non-Interactive">
+    Skip all prompts with flags:
+
+    ```bash
+    npx drevon init --hub --agents copilot,claude,cursor -y
+    ```
+
+    <Warning>
+      The `-y` flag requires `--agents` to be specified explicitly.
+    </Warning>
+  </Tab>
+</Tabs>
+
+## What Gets Created
+
+After running `drevon init`, your directory will contain:
+
+<CodeGroup>
+```text Hub Mode
+my-workspace/
+├── drevon.config.json          # Single source of truth
+├── .drevon/
+│   ├── memory/                 # Cross-project memory
+│   │   ├── user.md
+│   │   ├── projects.md
+│   │   ├── systems.md
+│   │   └── log.md
+│   ├── skills/                 # Installed skills
+│   │   └── find-skills/        # Auto-installed
+│   └── prompts/                # Reusable workflows
+│       └── _index.md
+├── workspace/                  # Your project folders go here
+├── .github/copilot-instructions.md
+├── CLAUDE.md
+├── AGENTS.md
+└── .cursor/rules/
+    ├── core.mdc
+    ├── memory.mdc
+    └── skills.mdc
+```
+
+```text Project Mode
+my-app/
+├── src/                        # Your code (untouched)
+├── drevon.config.json          # Single source of truth
+├── .drevon/
+│   ├── memory/                 # Project-scoped memory
+│   │   ├── context.md
+│   │   ├── decisions.md
+│   │   ├── patterns.md
+│   │   └── log.md
+│   ├── skills/
+│   │   └── find-skills/
+│   └── prompts/
+│       └── _index.md
+├── .github/copilot-instructions.md
+├── CLAUDE.md
+└── AGENTS.md
+```
+</CodeGroup>
+
+## Install a Skill
+
+Add capabilities from the [skills.sh](https://skills.sh) marketplace:
+
+```bash
+drevon skill add browser-use/browser-use
+```
+
+Skills are automatically injected into every agent's config on the next `drevon sync`.
+
+## Sync After Changes
+
+Whenever you edit `drevon.config.json`, regenerate agent configs:
+
+```bash
+drevon sync
+```
+
+## Verify Your Setup
+
+Check that everything is healthy:
+
+```bash
+drevon status
+```
+
+This shows your mode, identity, enabled agents (with health checks), memory files, installed skills, and prompt count.
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Modes" icon="code-branch" href="/concepts/modes">
+    Understand Hub vs Project mode in depth.
+  </Card>
+  <Card title="Memory System" icon="brain" href="/concepts/memory-system">
+    Learn how persistent memory works.
+  </Card>
+  <Card title="Skills" icon="puzzle-piece" href="/concepts/skills">
+    Browse and install agent skills.
+  </Card>
+</CardGroup>

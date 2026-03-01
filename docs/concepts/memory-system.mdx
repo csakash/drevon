@@ -1,0 +1,206 @@
+---
+title: Memory System
+description: Persistent cross-session memory that makes your AI agents self-evolving.
+---
+
+## Overview
+
+The memory system is Drevon's most powerful feature. It gives AI agents **persistent context across sessions** — they remember what happened yesterday, what decisions were made, and what patterns emerged.
+
+Without memory, every AI session starts from zero. With memory, agents compound knowledge over time.
+
+## How It Works
+
+<Steps>
+  <Step title="Session Start">
+    Agents are instructed to **read all memory files** before doing any work. This restores full context from previous sessions.
+  </Step>
+  <Step title="During Work">
+    Agents use memory context to make informed decisions — avoiding past mistakes, following established patterns, staying consistent with previous choices.
+  </Step>
+  <Step title="Session End">
+    Agents **write back** significant learnings, decisions, and observations to the appropriate memory files.
+  </Step>
+  <Step title="Self-Evolution">
+    When agents notice they're performing the same multi-step workflow repeatedly, they create **reusable prompts** in `.drevon/prompts/` — automating their own improvement.
+  </Step>
+</Steps>
+
+## Memory Files by Mode
+
+<Tabs>
+  <Tab title="Hub Mode">
+    Hub mode uses 4 memory files designed for cross-project awareness:
+
+    ### user.md
+    Stores your personal preferences, communication style, and confirmed decisions.
+
+    ```markdown
+    # User Preferences & Profile
+
+    ## Communication Style
+    - Prefers concise, direct responses
+    - Likes code examples over explanations
+
+    ## Confirmed Preferences
+    - Always use TypeScript strict mode
+    - Prefer Tailwind over CSS modules
+
+    ## Decisions Made
+    - 2026-02-28: Chose Next.js 15 for all web projects
+    ```
+
+    ### projects.md
+    A registry of all projects in the workspace with their status.
+
+    ```markdown
+    # Project Registry
+
+    ## Active Projects
+
+    ### landing-page
+    - **Folder:** workspace/landing-page/
+    - **Status:** active
+    - **Started:** 2026-02-28
+    - **Summary:** Marketing landing page. Next.js 15 + Tailwind.
+    ```
+
+    ### systems.md
+    Documents infrastructure, systems, and technical conventions.
+
+    ```markdown
+    # Systems & Infrastructure
+
+    ## Deployment
+    - All web projects deployed via Vercel
+    - Domain: *.trysudosu.com
+
+    ## Conventions
+    - ESM only, no CommonJS
+    - Zod for all runtime validation
+    ```
+
+    ### log.md
+    Append-only chronological record of significant actions.
+
+    ```markdown
+    # Action Log
+
+    ### 2026-02-28 — Workspace initialized
+    **Action:** Initialized AI-native workspace with drevon
+    **Outcome:** Memory system, agent configs created
+
+    ### 2026-02-28 — Landing page shipped
+    **Action:** Built and deployed marketing landing page
+    **Outcome:** Live at drevon.trysudosu.com
+    ```
+  </Tab>
+  <Tab title="Project Mode">
+    Project mode uses 4 memory files scoped to the codebase:
+
+    ### context.md
+    Project overview, architecture, key files, and dependencies.
+
+    ```markdown
+    # Project Context
+
+    ## Overview
+    E-commerce API built with Express + PostgreSQL
+
+    ## Architecture
+    - REST API with controller/service/repository pattern
+    - PostgreSQL with Prisma ORM
+    - Redis for caching
+
+    ## Key Files
+    - src/server.ts — Express app entry
+    - prisma/schema.prisma — Database schema
+    ```
+
+    ### decisions.md
+    ADR-style decision records with context and rationale.
+
+    ```markdown
+    # Technical Decisions
+
+    ### 001 — Use Prisma over TypeORM
+    - **Date:** 2026-01-15
+    - **Context:** Need an ORM with good TypeScript support
+    - **Decision:** Prisma for type-safe queries and migrations
+    - **Rationale:** Better DX, schema-first approach
+    ```
+
+    ### patterns.md
+    Code patterns, conventions, and anti-patterns.
+
+    ```markdown
+    # Code Patterns
+
+    ## Naming Conventions
+    - Files: kebab-case
+    - Classes: PascalCase
+    - Functions: camelCase
+
+    ## Error Handling
+    - Always use custom error classes
+    - Never catch and silently ignore errors
+    ```
+
+    ### log.md
+    Same append-only format as hub mode.
+  </Tab>
+</Tabs>
+
+## Write Rules
+
+Agents follow specific rules when updating memory:
+
+| File | Write Mode | Format |
+|------|-----------|--------|
+| `log.md` | **Append only** | `### YYYY-MM-DD — title` (newest at bottom) |
+| `user.md` | **Update in place** | Edit the relevant section |
+| `projects.md` / `systems.md` | **Update or add** | Update existing entry or add new |
+| `context.md` / `decisions.md` / `patterns.md` | **Update or add** | Update existing entry or add new |
+
+<Warning>
+  `log.md` is **append-only** — agents should never delete or modify existing entries. This ensures a reliable audit trail.
+</Warning>
+
+## Custom Memory Files
+
+You can add custom memory files beyond the defaults:
+
+```json
+{
+  "memory": {
+    "enabled": true,
+    "directory": ".drevon/memory",
+    "files": ["user.md", "projects.md", "systems.md", "log.md"],
+    "customFiles": ["competitors.md", "roadmap.md"]
+  }
+}
+```
+
+Custom files are included in the memory protocol — agents will read and update them alongside the standard files.
+
+## Disabling Memory
+
+If you don't want persistent memory:
+
+```json
+{
+  "memory": {
+    "enabled": false
+  }
+}
+```
+
+Or during init:
+
+```bash
+npx drevon init --no-memory
+```
+
+<Note>
+  Disabling memory removes one of Drevon's most powerful features. Consider keeping it enabled — even light memory usage compounds significantly over time.
+</Note>

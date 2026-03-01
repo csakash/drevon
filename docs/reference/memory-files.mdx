@@ -1,0 +1,201 @@
+---
+title: Memory Files Reference
+description: Complete reference for all memory file templates.
+---
+
+## Overview
+
+Memory files are markdown templates that agents read and write to maintain context across sessions. The specific files depend on the workspace mode.
+
+## Hub Mode Files
+
+### user.md
+
+Stores user preferences, communication style, and decisions.
+
+```markdown
+# User Preferences & Profile
+
+## Communication Style
+<!-- How the user likes to interact -->
+
+## Confirmed Preferences
+<!-- Decisions the user has explicitly made -->
+
+## Feedback & Reactions
+| Date | What | Reaction |
+|------|------|----------|
+
+## Decisions Made
+<!-- Significant choices made with or by the user -->
+```
+
+**Update when:** User expresses a preference or makes a decision.
+**Write mode:** Update the relevant section in place.
+
+---
+
+### projects.md
+
+Registry of all projects in the workspace.
+
+```markdown
+# Project Registry
+
+All active and completed projects in `workspace/`.
+
+## Active Projects
+<!-- ### project-name
+- **Folder:** workspace/project-name/
+- **Status:** active | completed | paused
+- **Started:** YYYY-MM-DD
+- **Summary:** one-line description -->
+
+## Completed Projects
+```
+
+**Update when:** A project is created, updated, or completed.
+**Write mode:** Update the relevant entry or add a new one.
+
+---
+
+### systems.md
+
+Infrastructure, systems, and conventions record.
+
+```markdown
+# Systems & Infrastructure
+
+Persistent record of systems, conventions, and infrastructure.
+Update when a new system is created or changed.
+```
+
+**Update when:** A new system is created or an existing one changes.
+**Write mode:** Update the relevant entry or add a new one.
+
+---
+
+### log.md
+
+Chronological action log — the activity journal.
+
+```markdown
+# Action Log
+
+Chronological record of significant actions. Append only — never delete.
+
+### YYYY-MM-DD — title
+**Action:** What was done
+**Outcome:** What resulted
+```
+
+**Update when:** After every significant action.
+**Write mode:** Append only (newest at bottom). Format: `### YYYY-MM-DD — title`
+
+---
+
+## Project Mode Files
+
+### context.md
+
+Project overview, architecture, and key information.
+
+```markdown
+# Project Context
+
+## Overview
+<!-- One-paragraph project description -->
+
+## Architecture
+<!-- High-level architecture description -->
+
+## Key Files
+<!-- Important files and their purposes -->
+
+## Dependencies
+<!-- Key dependencies and why they're used -->
+```
+
+**Update when:** Tech stack, architecture, or project scope changes.
+**Write mode:** Update the relevant section in place.
+
+---
+
+### decisions.md
+
+ADR-style technical decision records.
+
+```markdown
+# Technical Decisions
+
+Architecture Decision Records. Append new decisions, never modify old ones.
+
+<!-- ### NNN — Title
+- **Date:** YYYY-MM-DD
+- **Context:** What prompted this decision
+- **Decision:** What was decided
+- **Rationale:** Why this option was chosen
+- **Alternatives:** What else was considered -->
+```
+
+**Update when:** A technical decision is made.
+**Write mode:** Append a new numbered record.
+
+---
+
+### patterns.md
+
+Code patterns, conventions, and anti-patterns.
+
+```markdown
+# Code Patterns & Conventions
+
+Established patterns in this codebase.
+
+## Naming Conventions
+## File Structure
+## Error Handling Patterns
+## Testing Patterns
+## Anti-Patterns (Don't Do This)
+```
+
+**Update when:** A new pattern is established or an existing one changes.
+**Write mode:** Update the relevant section or add a new one.
+
+---
+
+### log.md (Project Mode)
+
+Same format as hub mode:
+
+```markdown
+# Action Log
+
+Chronological record of significant actions. Append only — never delete.
+```
+
+## Memory Protocol
+
+Both modes include a **memory protocol** in agent instructions that tells agents:
+
+1. **Read** all memory files at the start of every session
+2. **Write** after significant actions
+3. **Be specific and factual** — memory should be useful to a future session with zero context
+4. **Create reusable prompts** when performing the same multi-step workflow repeatedly (self-evolution)
+
+## Custom Memory Files
+
+Add custom files via the `customFiles` config option:
+
+```json
+{
+  "memory": {
+    "enabled": true,
+    "directory": ".drevon/memory",
+    "files": ["user.md", "projects.md", "systems.md", "log.md"],
+    "customFiles": ["roadmap.md", "competitors.md"]
+  }
+}
+```
+
+Custom files must be created manually — Drevon only creates the standard template files.

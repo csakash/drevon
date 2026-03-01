@@ -1,0 +1,92 @@
+---
+title: drevon init
+description: Initialize a new AI-native workspace.
+---
+
+## Usage
+
+```bash
+drevon init [options]
+```
+
+## Description
+
+The `init` command transforms any directory into an AI-native workspace. It runs an interactive wizard that guides you through configuration, then generates all necessary files.
+
+## Options
+
+| Flag | Description |
+|------|-------------|
+| `--hub` | Force hub mode (multi-project workspace) |
+| `--project` | Force project mode (single codebase) |
+| `-y, --yes` | Skip interactive prompts, use defaults |
+| `--agents <list>` | Comma-separated list of agents to enable |
+| `--no-memory` | Disable memory system |
+| `--no-skills` | Disable skills integration |
+| `--template <preset>` | Use an identity preset (`founder`, `developer`, `team`, `researcher`) |
+
+## Examples
+
+### Interactive (Recommended)
+
+```bash
+npx drevon init
+```
+
+Walks you through mode selection, naming, identity, agent selection, memory, and prompts.
+
+### Hub Mode with Defaults
+
+```bash
+npx drevon init --hub --template founder --agents copilot,claude -y
+```
+
+### Project Mode with Specific Agents
+
+```bash
+cd my-project
+npx drevon init --project --agents copilot,cursor,claude -y
+```
+
+### All Agents
+
+```bash
+npx drevon init --agents copilot,claude,cursor,codex,windsurf,cline,aider,continue -y
+```
+
+## What It Creates
+
+<Steps>
+  <Step title="drevon.config.json">
+    The single source of truth for your workspace configuration.
+  </Step>
+  <Step title=".drevon/ directory">
+    Contains memory, skills, and prompts subdirectories.
+  </Step>
+  <Step title="Memory files">
+    Mode-appropriate memory templates (if memory is enabled).
+  </Step>
+  <Step title="Prompts">
+    Index file and optional starter workflow templates.
+  </Step>
+  <Step title="Skills infrastructure">
+    Skills directory with auto-installed `find-skills` skill and `skills-lock.json`.
+  </Step>
+  <Step title="workspace/ directory">
+    Created in hub mode only — your project folders go here.
+  </Step>
+  <Step title="Agent config files">
+    Native config files for every enabled agent.
+  </Step>
+  <Step title=".gitignore updates">
+    Appends Drevon-specific entries to `.gitignore`.
+  </Step>
+</Steps>
+
+## Re-initialization
+
+If `drevon.config.json` already exists, the wizard will ask if you want to overwrite it.
+
+<Warning>
+  Re-initializing will overwrite your existing config. Back up `drevon.config.json` and `.drevon/memory/` if they contain important data.
+</Warning>

@@ -1,0 +1,53 @@
+---
+title: Windsurf
+description: Drevon's adapter for the Windsurf editor.
+---
+
+## Overview
+
+Windsurf reads instructions from `.windsurfrules` in the repository root. Drevon generates this as a standard markdown file.
+
+## Output File
+
+```
+.windsurfrules
+```
+
+## Enabling
+
+```bash
+drevon add-agent windsurf
+```
+
+Or in `drevon.config.json`:
+
+```json
+{
+  "agents": {
+    "windsurf": {
+      "enabled": true
+    }
+  }
+}
+```
+
+## Agent-Specific Settings
+
+```json
+{
+  "agents": {
+    "windsurf": {
+      "enabled": true,
+      "extraInstructions": [
+        "Use the built-in terminal for all commands",
+        "Explain changes before applying them"
+      ]
+    }
+  }
+}
+```
+
+## Requirements
+
+- [Windsurf](https://codeium.com/windsurf) editor installed
+- `.windsurfrules` in the repository root (Drevon handles this)

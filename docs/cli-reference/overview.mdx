@@ -1,0 +1,64 @@
+---
+title: CLI Overview
+description: Complete reference for the Drevon command-line interface.
+---
+
+## Usage
+
+```bash
+drevon <command> [options]
+```
+
+Or without global install:
+
+```bash
+npx drevon <command> [options]
+```
+
+## Commands
+
+### Workspace Management
+
+| Command | Description |
+|---------|-------------|
+| [`init`](/cli-reference/init) | Initialize a new workspace (interactive wizard) |
+| [`sync`](/cli-reference/sync) | Regenerate all agent configs from `drevon.config.json` |
+| [`status`](/cli-reference/status) | Show workspace status dashboard |
+| [`doctor`](/cli-reference/doctor) | Diagnose workspace issues |
+| [`upgrade`](/cli-reference/upgrade) | Migrate config to latest schema version |
+
+### Agent Management
+
+| Command | Description |
+|---------|-------------|
+| [`add-agent`](/cli-reference/add-agent) | Enable and configure a new agent |
+| [`remove-agent`](/cli-reference/remove-agent) | Disable and clean up an agent |
+
+### Skills
+
+| Command | Description |
+|---------|-------------|
+| [`skill add`](/cli-reference/skill) | Install a skill from skills.sh |
+| [`skill remove`](/cli-reference/skill) | Remove an installed skill |
+| [`skill list`](/cli-reference/skill) | List installed skills |
+| [`skill sync`](/cli-reference/skill) | Re-sync skills into agent configs |
+
+### Prompts
+
+| Command | Description |
+|---------|-------------|
+| [`prompt list`](/cli-reference/prompt) | List available prompts |
+| [`prompt create`](/cli-reference/prompt) | Create a new prompt template |
+
+## Global Options
+
+| Flag | Description |
+|------|-------------|
+| `--version` | Show version number |
+| `--help` | Show help for any command |
+
+```bash
+drevon --version
+drevon init --help
+drevon skill --help
+```

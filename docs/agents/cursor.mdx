@@ -1,0 +1,108 @@
+---
+title: Cursor
+description: Drevon's adapter for the Cursor editor — the most advanced adapter.
+---
+
+## Overview
+
+Cursor uses a unique `.mdc` format: Markdown with YAML frontmatter that supports conditional rules via glob patterns. Drevon's Cursor adapter is the most complex, generating **multiple rule files** from your config.
+
+## Output Files
+
+```
+.cursor/rules/
+├── core.mdc           # Identity, instructions, agent extras
+├── memory.mdc         # Memory protocol
+├── skills.mdc         # Installed skills
+└── *.mdc              # Per-instruction files (if using globs)
+```
+
+## The MDC Format
+
+Each `.mdc` file contains YAML frontmatter with Cursor-specific fields:
+
+```markdown
+---
+description: Core workspace rules and identity
+globs:
+alwaysApply: true
+---
+
+# Drevon Core Rules
+
+## Identity & Operating Mode
+...
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `description` | `string` | What this rule file covers |
+| `globs` | `string \| string[]` | File patterns that trigger this rule |
+| `alwaysApply` | `boolean` | Whether to apply to all files |
+
+## Glob-Targeted Instructions
+
+Drevon's killer feature for Cursor: instructions with `globs` become **separate rule files** that only activate when matching files are open.
+
+```json
+{
+  "instructions": [
+    {
+      "id": "typescript-rules",
+      "title": "TypeScript Standards",
+      "content": "Use strict TypeScript. Prefer interfaces over types.",
+      "globs": ["**/*.ts", "**/*.tsx"],
+      "alwaysApply": false
+    },
+    {
+      "id": "css-rules",
+      "title": "Styling Guidelines",
+      "content": "Use Tailwind utility classes. Never use inline styles.",
+      "globs": ["**/*.css", "**/*.tsx"],
+      "alwaysApply": false
+    }
+  ]
+}
+```
+
+This generates:
+
+```
+.cursor/rules/
+├── core.mdc
+├── memory.mdc
+├── skills.mdc
+├── typescript-rules.mdc    # Only active in .ts/.tsx files
+└── css-rules.mdc           # Only active in .css/.tsx files
+```
+
+<Tip>
+  Use glob-targeted instructions to give Cursor context-specific guidance. For example, different rules for frontend vs backend files, or special handling for test files.
+</Tip>
+
+## Enabling
+
+```bash
+drevon add-agent cursor
+```
+
+## Agent-Specific Settings
+
+```json
+{
+  "agents": {
+    "cursor": {
+      "enabled": true,
+      "extraInstructions": [
+        "When generating UI code, always use shadcn/ui components",
+        "Follow the project's existing naming conventions"
+      ]
+    }
+  }
+}
+```
+
+## Requirements
+
+- [Cursor](https://cursor.sh) editor installed
+- `.cursor/rules/` directory (Drevon creates this)

@@ -1,0 +1,51 @@
+---
+title: drevon sync
+description: Regenerate all agent config files from drevon.config.json.
+---
+
+## Usage
+
+```bash
+drevon sync
+```
+
+## Description
+
+Reads `drevon.config.json`, resolves all skills and memory settings, then regenerates every enabled agent's config file. Only changed files are written — unchanged files are skipped to avoid Git noise.
+
+## What It Does
+
+1. Loads and validates `drevon.config.json`
+2. Migrates any skills from `.agents/skills/` → `.drevon/skills/` (backwards compatibility)
+3. Reads `skills-lock.json` for installed skills
+4. For each enabled agent, generates the native config file
+5. Diffs against existing files — only writes changes
+6. Reports what was created, updated, or unchanged
+
+## Output
+
+```
+  ● Syncing agent configs...
+
+  ✓ .github/copilot-instructions.md (updated)
+  ✓ CLAUDE.md (updated)
+  ✓ .cursor/rules/core.mdc (unchanged)
+  ✓ .cursor/rules/memory.mdc (unchanged)
+  ✓ .cursor/rules/skills.mdc (updated)
+  ✓ AGENTS.md (updated)
+
+  Sync complete — 4 updated, 2 unchanged
+```
+
+## When to Run
+
+Run `drevon sync` after any of these changes:
+
+- Editing `drevon.config.json` (identity, instructions, agent settings)
+- Installing or removing a skill
+- Adding or modifying memory files
+- Creating or deleting prompts
+
+<Tip>
+  It's safe to run `drevon sync` frequently — it's idempotent and only writes files that actually changed.
+</Tip>

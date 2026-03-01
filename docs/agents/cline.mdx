@@ -1,0 +1,53 @@
+---
+title: Cline
+description: Drevon's adapter for the Cline VS Code extension.
+---
+
+## Overview
+
+Cline reads instructions from `.clinerules` in the repository root. Drevon generates this as a standard markdown file.
+
+## Output File
+
+```
+.clinerules
+```
+
+## Enabling
+
+```bash
+drevon add-agent cline
+```
+
+Or in `drevon.config.json`:
+
+```json
+{
+  "agents": {
+    "cline": {
+      "enabled": true
+    }
+  }
+}
+```
+
+## Agent-Specific Settings
+
+```json
+{
+  "agents": {
+    "cline": {
+      "enabled": true,
+      "extraInstructions": [
+        "Always ask before modifying files outside the src/ directory",
+        "Use the file tree view to understand project structure first"
+      ]
+    }
+  }
+}
+```
+
+## Requirements
+
+- [Cline](https://github.com/clinebot/cline) VS Code extension installed
+- `.clinerules` in the repository root (Drevon handles this)

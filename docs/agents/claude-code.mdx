@@ -1,0 +1,79 @@
+---
+title: Claude Code
+description: Drevon's adapter for Anthropic's Claude Code agent.
+---
+
+## Overview
+
+Claude Code reads project instructions from `CLAUDE.md` in the repository root. Drevon generates this file with your full config plus Claude-specific features like `allowedCommands`.
+
+## Output File
+
+```
+CLAUDE.md
+```
+
+## Special Features
+
+### Allowed Commands
+
+Claude Code has a command execution permission system. Drevon automatically generates an `allowedCommands` section:
+
+```markdown
+## Allowed Commands
+
+The following commands are pre-approved for use without user confirmation:
+
+- `git`
+- `npm`
+- `npx`
+- `node`
+- `python3`
+```
+
+Configure in `drevon.config.json`:
+
+```json
+{
+  "agents": {
+    "claude": {
+      "enabled": true,
+      "allowedCommands": ["git", "npm", "npx", "node", "python3", "docker"]
+    }
+  }
+}
+```
+
+<Warning>
+  Only add commands you trust Claude to run autonomously. Each listed command can be executed without confirmation prompts.
+</Warning>
+
+## Enabling
+
+```bash
+drevon add-agent claude
+```
+
+When added via CLI, default `allowedCommands` (`git`, `npm`, `npx`, `node`, `python3`) are automatically configured.
+
+## Agent-Specific Settings
+
+```json
+{
+  "agents": {
+    "claude": {
+      "enabled": true,
+      "allowedCommands": ["git", "npm", "npx", "node", "python3"],
+      "extraInstructions": [
+        "Always explain your reasoning before making changes",
+        "Prefer small, focused commits"
+      ]
+    }
+  }
+}
+```
+
+## Requirements
+
+- Claude Code installed (`npm install -g @anthropic-ai/claude-code`)
+- `CLAUDE.md` in the repository root (Drevon handles this)

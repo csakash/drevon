@@ -1,0 +1,68 @@
+---
+title: drevon prompt
+description: List and create reusable workflow prompts.
+---
+
+## Usage
+
+```bash
+drevon prompt <action> [arguments]
+```
+
+## Actions
+
+### prompt list
+
+Show all available prompts with their titles and descriptions.
+
+```bash
+drevon prompt list
+```
+
+**Output:**
+```
+Available prompts:
+
+  code-review     Thorough code review checklist covering correctness, security, and performance
+  debug           Structured debugging workflow
+  new-feature     Feature implementation guide with requirements, design, and testing
+  refactor        Safe refactoring methodology with incremental execution
+  write-tests     Test writing methodology using AAA structure
+```
+
+Titles and descriptions are extracted from YAML frontmatter in each prompt file.
+
+---
+
+### prompt create
+
+Create a new prompt template with scaffolded frontmatter.
+
+```bash
+drevon prompt create <name>
+```
+
+**Example:**
+```bash
+drevon prompt create deploy-checklist
+```
+
+Creates `.drevon/prompts/deploy-checklist.md`:
+
+```markdown
+---
+title: Deploy Checklist
+description: ""
+tags: []
+---
+
+## Steps
+
+1.
+```
+
+Edit this file to add your workflow steps, then agents can reference it during relevant tasks.
+
+<Tip>
+  Keep prompts focused and prescriptive. The best prompts describe a specific workflow with numbered steps that agents can follow systematically.
+</Tip>

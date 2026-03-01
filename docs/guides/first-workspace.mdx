@@ -1,0 +1,170 @@
+---
+title: Your First Workspace
+description: A complete walkthrough for setting up your first Drevon workspace.
+---
+
+## What You'll Build
+
+In this guide, you'll create a **hub-mode workspace** from scratch — complete with memory, skills, and multiple agents configured. By the end, you'll have a self-evolving workspace that works with any AI coding agent.
+
+## Prerequisites
+
+- Node.js ≥ 18
+- At least one AI coding agent installed (e.g., GitHub Copilot, Claude Code)
+
+## Step 1: Create the Workspace
+
+```bash
+mkdir my-ai-workspace && cd my-ai-workspace
+npx drevon init
+```
+
+The wizard starts. Here's what to choose:
+
+<Steps>
+  <Step title="Mode → Hub">
+    Since this is a new empty directory, Drevon suggests Hub mode. Accept it.
+  </Step>
+  <Step title="Name → my-ai-workspace">
+    Uses the directory name. Press Enter to accept.
+  </Step>
+  <Step title="Identity → Founder">
+    Choose "Founder" for maximum autonomy. The agent will take initiative and move fast.
+  </Step>
+  <Step title="Agents → Copilot + Claude">
+    Select at least two agents to see Drevon's multi-agent power.
+  </Step>
+  <Step title="Memory → Yes">
+    Enable memory for persistent cross-session context.
+  </Step>
+  <Step title="Starter Prompts → Yes">
+    Install the 5 starter workflow templates.
+  </Step>
+</Steps>
+
+## Step 2: Explore What Was Created
+
+```bash
+drevon status
+```
+
+You should see:
+- Mode: `hub`
+- Identity: `founder-agent`
+- 2 agents enabled with health checks
+- 4 memory files
+- 1 skill (find-skills)
+- 5 prompts
+
+Let's look at the structure:
+
+```bash
+ls -la
+```
+
+```
+drevon.config.json
+.drevon/
+  memory/
+    user.md
+    projects.md
+    systems.md
+    log.md
+  skills/
+    find-skills/
+  prompts/
+    _index.md
+    code-review.md
+    debug.md
+    new-feature.md
+    refactor.md
+    write-tests.md
+workspace/
+.github/copilot-instructions.md
+CLAUDE.md
+```
+
+## Step 3: Install Your First Skill
+
+Let's add browser automation capability:
+
+```bash
+drevon skill add browser-use/browser-use
+```
+
+Verify it's installed:
+
+```bash
+drevon skill list
+```
+
+## Step 4: Add a Custom Instruction
+
+Edit `drevon.config.json` to add a project-specific rule:
+
+```json
+{
+  "instructions": [
+    {
+      "id": "memory-protocol",
+      "title": "Memory Protocol",
+      "content": "Read all files in .drevon/memory/ at the start of every session. Write to them after significant actions.",
+      "alwaysApply": true
+    },
+    {
+      "id": "tech-stack",
+      "title": "Tech Stack",
+      "content": "This workspace uses TypeScript, Next.js 15, Tailwind CSS, and Vercel for deployment. Always use these technologies unless explicitly told otherwise.",
+      "alwaysApply": true
+    }
+  ]
+}
+```
+
+Then sync:
+
+```bash
+drevon sync
+```
+
+## Step 5: Start Your First Project
+
+Create a project folder:
+
+```bash
+mkdir workspace/my-first-project
+```
+
+Now open the workspace in your editor and start a conversation with your AI agent. The agent will:
+
+1. **Read memory files** to understand the workspace context
+2. **Follow your identity rules** (founder-agent posture)
+3. **Know about installed skills** (browser-use, find-skills)
+4. **Use your custom instructions** (tech stack preferences)
+
+## Step 6: Verify the Self-Evolution Loop
+
+After your first session, check if the agent updated memory:
+
+```bash
+cat .drevon/memory/log.md
+```
+
+You should see new entries documenting what the agent did. Over time, these memory files become an invaluable knowledge base.
+
+## What's Next
+
+<CardGroup cols={2}>
+  <Card title="Add More Skills" icon="puzzle-piece" href="/concepts/skills">
+    Browse skills.sh for more capabilities.
+  </Card>
+  <Card title="Custom Instructions" icon="pen" href="/guides/custom-instructions">
+    Write powerful project-specific rules.
+  </Card>
+  <Card title="Team Setup" icon="users" href="/guides/team-workflows">
+    Share this workspace with your team.
+  </Card>
+  <Card title="Best Practices" icon="star" href="/guides/best-practices">
+    Tips for getting the most out of Drevon.
+  </Card>
+</CardGroup>

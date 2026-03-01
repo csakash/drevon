@@ -1,0 +1,75 @@
+---
+title: Agent Overview
+description: How Drevon generates native config files for 8 different AI coding agents.
+---
+
+## The Adapter System
+
+Drevon uses an **adapter pattern** to generate native config files for each supported agent. Every adapter:
+
+1. **Extends** a shared `BaseAdapter` class with common content generation
+2. **Implements** agent-specific formatting and file structure
+3. **Generates** native config files that agents read without modification
+
+This means all agents receive the **same content** (identity, memory protocol, instructions, skills) — just formatted for their specific config format.
+
+## Supported Agents
+
+<CardGroup cols={2}>
+  <Card title="GitHub Copilot" icon="github" href="/agents/github-copilot">
+    `.github/copilot-instructions.md`
+  </Card>
+  <Card title="Claude Code" icon="message-bot" href="/agents/claude-code">
+    `CLAUDE.md` with allowedCommands
+  </Card>
+  <Card title="Cursor" icon="wand-magic-sparkles" href="/agents/cursor">
+    `.cursor/rules/*.mdc` — multi-file with YAML frontmatter
+  </Card>
+  <Card title="OpenAI Codex" icon="robot" href="/agents/openai-codex">
+    `AGENTS.md`
+  </Card>
+  <Card title="Windsurf" icon="wind" href="/agents/windsurf">
+    `.windsurfrules`
+  </Card>
+  <Card title="Cline" icon="terminal" href="/agents/cline">
+    `.clinerules`
+  </Card>
+  <Card title="Aider" icon="code" href="/agents/aider">
+    `.aider/instructions.md` + `.aider.conf.yml`
+  </Card>
+  <Card title="Continue.dev" icon="play" href="/agents/continue">
+    `.continue/rules/drevon.md`
+  </Card>
+</CardGroup>
+
+## Content Structure
+
+Every agent config contains these sections (in order):
+
+| Section | Description | Always Included |
+|---------|-------------|:-:|
+| **Header** | Auto-generated comment with Drevon version | ✓ |
+| **Identity** | Role, description, posture | ✓ |
+| **Memory Protocol** | How to read/write memory files | If memory enabled |
+| **Instructions** | Custom rules from config | If any defined |
+| **Agent Extras** | Per-agent `extraInstructions` | If defined |
+| **Skills** | Installed skills table and skill file references | If skills enabled |
+| **Workspace** | Workspace organization rules | Hub mode only |
+| **Prompts** | Available prompt templates | If prompts enabled |
+
+## Format Comparison
+
+| Agent | Files | Format | Special Features |
+|-------|-------|--------|-----------------|
+| Copilot | 1 | Markdown | Standard |
+| Claude | 1 | Markdown | `allowedCommands` section |
+| Cursor | 3+ | MDC (YAML + MD) | Glob-targeted conditional rules |
+| Codex | 1 | Markdown | Standard |
+| Windsurf | 1 | Markdown | Standard |
+| Cline | 1 | Markdown | Standard |
+| Aider | 1-2 | Markdown + YAML | Optional `.aider.conf.yml` |
+| Continue | 1 | Markdown | Standard |
+
+<Info>
+  MDC is Cursor's custom format: Markdown with YAML frontmatter containing `alwaysApply`, `description`, and `globs` fields. Instructions with `globs` in your config automatically become separate `.mdc` files that activate only for matching files.
+</Info>
