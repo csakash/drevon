@@ -74,7 +74,22 @@ function sanitizeSkillInput(rawArgs: string[]): { source: string; skillFlag?: st
   return { source: joined, skillFlag };
 }
 
-export async function skillCommand(action: string, arg?: string, rawArgs?: string[]): Promise<void> {
+/** Map drevon agent IDs to skills CLI agent names */
+const SKILLS_CLI_AGENT_MAP: Record<string, string> = {
+  copilot: 'github-copilot',
+  claude: 'claude-code',
+  cursor: 'cursor',
+  codex: 'codex',
+  windsurf: 'windsurf',
+  cline: 'cline',
+  continue: 'continue',
+};
+
+export interface SkillCommandOptions {
+  verbose?: boolean;
+}
+
+export async function skillCommand(action: string, arg?: string, rawArgs?: string[], options?: SkillCommandOptions): Promise<void> {
   const cwd = process.cwd();
 
   switch (action) {
@@ -104,13 +119,37 @@ export async function skillCommand(action: string, arg?: string, rawArgs?: strin
       try {
         logger.info(`Installing skill: ${effectiveSkill || skillName}...`);
         const skillFlag = effectiveSkill ? ` --skill ${effectiveSkill}` : '';
-        execSync(`npx -y skills add ${repo}${skillFlag}`, {
-          cwd,
-          stdio: 'inherit',
-        });
-      } catch {
+
+        // Build agent flags from drevon config, defaulting to 'universal'
+        let agentFlags = ' -a universal';
+        try {
+          const config = loadConfig(cwd);
+          const enabledAgents = Object.entries(config.agents)
+            .filter(([, v]) => v?.enabled)
+            .map(([k]) => SKILLS_CLI_AGENT_MAP[k])
+            .filter(Boolean);
+          if (enabledAgents.length > 0) {
+            agentFlags = enabledAgents.map((a) => ` -a ${a}`).join('');
+          }
+        } catch {
+          // Config not available, fall back to universal
+        }
+
+        // Non-interactive: -y skips all prompts, -a targets specific agents
+        const cmd = `npx -y skills add ${repo}${skillFlag}${agentFlags} -y`;
+
+        if (options?.verbose) {
+          execSync(cmd, { cwd, stdio: 'inherit' });
+        } else {
+          execSync(cmd, { cwd, stdio: 'pipe' });
+        }
+      } catch (err) {
+        const stderr = err instanceof Error && 'stderr' in err ? String((err as any).stderr) : '';
+        const stdout = err instanceof Error && 'stdout' in err ? String((err as any).stdout) : '';
         logger.error(`Failed to install skill: ${sanitized.source}`);
-        logger.info('Make sure the skills CLI is available: npx skills --help');
+        if (stderr) logger.info(stderr.trim());
+        if (stdout) logger.info(stdout.trim());
+        logger.info('Run with --verbose for full output, or check: npx skills --help');
         process.exit(1);
       }
 
@@ -156,6 +195,12 @@ export async function skillCommand(action: string, arg?: string, rawArgs?: strin
         skills.push(entry);
       }
       writeSkillsLock(cwd, skills);
+
+      // Migrate any untracked .agents/skills/ → .drevon/skills/ before compiling
+      const migrated = migrateAgentsSkills(cwd);
+      for (const name of migrated) {
+        logger.info(`Migrated skill from .agents/skills/${name} → .drevon/skills/${name}`);
+      }
 
       // Re-sync agent configs
       try {

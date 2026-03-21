@@ -61,9 +61,10 @@ skill
   .command('add <source...>')
   .description('Install a skill from skills.sh')
   .option('--skill <name>', 'Skill name within the repository')
-  .action((source: string[], opts: { skill?: string }) => {
+  .option('--verbose', 'Show full skills CLI output')
+  .action((source: string[], opts: { skill?: string; verbose?: boolean }) => {
     if (opts.skill) source.push('--skill', opts.skill);
-    skillCommand('add', undefined, source);
+    skillCommand('add', undefined, source, { verbose: opts.verbose });
   });
 
 skill
