@@ -1,6 +1,6 @@
 {
   "name": "drevon",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Turn any directory into a self-evolving AI workspace",
   "type": "module",
   "bin": {
