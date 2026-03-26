@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync
 import { join } from 'path';
 import { execSync } from 'child_process';
 import pc from 'picocolors';
-import { loadConfig, writeConfig } from '../core/config.js';
+import { loadConfig, writeConfig, findProjectRoot } from '../core/config.js';
 import { compile } from '../core/compiler.js';
 import { migrateAgentsSkills } from '../core/skills.js';
 import * as logger from '../utils/logger.js';
@@ -90,7 +90,13 @@ export interface SkillCommandOptions {
 }
 
 export async function skillCommand(action: string, arg?: string, rawArgs?: string[], options?: SkillCommandOptions): Promise<void> {
-  const cwd = process.cwd();
+  let cwd: string;
+  try {
+    cwd = findProjectRoot(process.cwd());
+  } catch {
+    logger.error('No drevon.config.json found. Run "drevon init" first.');
+    process.exit(1);
+  }
 
   switch (action) {
     case 'add': {
@@ -220,11 +226,22 @@ export async function skillCommand(action: string, arg?: string, rawArgs?: strin
       }
 
       const skillDir = join(cwd, '.drevon', 'skills', arg);
+      const agentsSkillDir = join(cwd, '.agents', 'skills', arg);
+      const skills = readSkillsLock(cwd);
+      const inLock = skills.some((s) => s.name === arg);
+
+      if (!existsSync(skillDir) && !existsSync(agentsSkillDir) && !inLock) {
+        logger.error(`Skill "${arg}" is not installed.`);
+        process.exit(1);
+      }
+
       if (existsSync(skillDir)) {
         rmSync(skillDir, { recursive: true });
       }
+      if (existsSync(agentsSkillDir)) {
+        rmSync(agentsSkillDir, { recursive: true });
+      }
 
-      const skills = readSkillsLock(cwd);
       const filtered = skills.filter((s) => s.name !== arg);
       writeSkillsLock(cwd, filtered);
 

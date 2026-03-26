@@ -1,11 +1,18 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import pc from 'picocolors';
+import { findProjectRoot } from '../core/config.js';
 import * as logger from '../utils/logger.js';
 import { colors } from '../utils/logger.js';
 
 export async function promptCommand(action: string, arg?: string): Promise<void> {
-  const cwd = process.cwd();
+  let cwd: string;
+  try {
+    cwd = findProjectRoot(process.cwd());
+  } catch {
+    logger.error('No drevon.config.json found. Run "drevon init" first.');
+    process.exit(1);
+  }
   const promptsDir = join(cwd, '.drevon', 'prompts');
 
   switch (action) {

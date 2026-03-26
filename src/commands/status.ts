@@ -1,14 +1,20 @@
 import { existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import type { AgentId } from '../types.js';
-import { loadConfig } from '../core/config.js';
+import { loadConfig, findProjectRoot } from '../core/config.js';
 import { getAdapter, getAgentDisplayName } from '../adapters/registry.js';
 import * as logger from '../utils/logger.js';
 import { colors } from '../utils/logger.js';
 import pc from 'picocolors';
 
 export async function statusCommand(): Promise<void> {
-  const cwd = process.cwd();
+  let cwd: string;
+  try {
+    cwd = findProjectRoot(process.cwd());
+  } catch {
+    logger.error('No drevon.config.json found. Run "drevon init" first.');
+    process.exit(1);
+  }
 
   let config;
   try {

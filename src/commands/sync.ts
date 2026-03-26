@@ -1,10 +1,16 @@
-import { loadConfig } from '../core/config.js';
+import { loadConfig, findProjectRoot } from '../core/config.js';
 import { compile } from '../core/compiler.js';
 import { migrateAgentsSkills } from '../core/skills.js';
 import * as logger from '../utils/logger.js';
 
 export async function syncCommand(): Promise<void> {
-  const cwd = process.cwd();
+  let cwd: string;
+  try {
+    cwd = findProjectRoot(process.cwd());
+  } catch {
+    logger.error('No drevon.config.json found. Run "drevon init" first.');
+    process.exit(1);
+  }
 
   let config;
   try {

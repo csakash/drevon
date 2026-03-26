@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import { join, dirname, parse as parsePath } from 'path';
 import type { DrevonConfig, DrevonMode, AgentId, IdentityConfig } from '../types.js';
 
 const AgentIdEnum = z.enum([
@@ -77,6 +77,23 @@ export function writeConfig(dir: string, config: DrevonConfig): void {
 
 export function configExists(dir: string): boolean {
   return existsSync(join(dir, 'drevon.config.json'));
+}
+
+/**
+ * Walk up from startDir to find the nearest directory containing drevon.config.json.
+ * Returns the project root directory, or throws if not found.
+ */
+export function findProjectRoot(startDir: string): string {
+  let dir = startDir;
+  while (true) {
+    if (configExists(dir)) return dir;
+    const parent = dirname(dir);
+    if (parent === dir) break; // reached filesystem root
+    dir = parent;
+  }
+  throw new Error(
+    `No drevon.config.json found in ${startDir} or any parent directory. Run "drevon init" first.`
+  );
 }
 
 const HUB_MEMORY_FILES: Record<string, string> = {

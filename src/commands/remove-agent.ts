@@ -1,10 +1,16 @@
 import type { AgentId } from '../types.js';
-import { loadConfig, writeConfig } from '../core/config.js';
+import { loadConfig, writeConfig, findProjectRoot } from '../core/config.js';
 import { getAdapter, getAllAgentIds, getAgentDisplayName } from '../adapters/registry.js';
 import * as logger from '../utils/logger.js';
 
 export async function removeAgentCommand(name: string): Promise<void> {
-  const cwd = process.cwd();
+  let cwd: string;
+  try {
+    cwd = findProjectRoot(process.cwd());
+  } catch {
+    logger.error('No drevon.config.json found. Run "drevon init" first.');
+    process.exit(1);
+  }
 
   const allAgents = getAllAgentIds();
   if (!allAgents.includes(name as AgentId)) {
