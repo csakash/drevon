@@ -1,0 +1,111 @@
+---
+title: drevon memory
+description: Read, write, search, compact, and migrate the workspace memory store.
+---
+
+## Usage
+
+```bash
+drevon memory <subcommand> [options]
+```
+
+The `memory` command group manages the v2 memory store. Writers append to small files and
+keep `INDEX.md` in sync, so recording memory never requires re-reading a large file.
+
+## Subcommands
+
+### `drevon memory log "<text>"`
+
+Append a dated entry to the current month's log segment and refresh the index headlines.
+
+```bash
+drevon memory log "Shipped the v2 memory system"
+```
+
+### `drevon memory decide "<title>" [--why "<rationale>"]`
+
+Record a technical decision as its own file under `topics/decisions/` and update the index
+pointer.
+
+```bash
+drevon memory decide "Use SQLite for local state" --why "zero-config, single file"
+```
+
+### `drevon memory learn "<text>" [--topic <name>]`
+
+Append a pattern or convention to a topic file (default `patterns`, or `user` in hub mode),
+creating the file and its index pointer if needed.
+
+```bash
+drevon memory learn "Validate all input with zod" --topic patterns
+```
+
+### `drevon memory note "<text>"`
+
+Set the **Active Work** block in the index — the current focus a fresh session should see
+first.
+
+```bash
+drevon memory note "Building the OAuth flow"
+```
+
+### `drevon memory status`
+
+Show the store layout, the **eager load** (index) versus its budget, per-tier token usage,
+and the total.
+
+```
+  Layout      v2
+  Eager load  ~266 tokens (budget 2,000)
+  Tiers (on-demand)
+    topics   ~13,215 tokens
+    log      ~45,781 tokens
+    archive  ~59,006 tokens
+  Total       ~118,268 tokens across 42 files
+```
+
+### `drevon memory search "<query>" [--limit <n>]`
+
+Lexical (BM25) search over topics, log segments, summaries, and the index. No embeddings, no
+network — works fully offline and in non-git projects.
+
+```bash
+drevon memory search "oauth google login" --limit 5
+```
+
+### `drevon memory compact`
+
+Roll log months older than `retentionMonths` into `log/summaries.md` and move their bodies to
+`archive/` — **non-destructive**, then re-enforce the index budget. Topics and decisions are
+never auto-evicted.
+
+```bash
+drevon memory compact
+```
+
+### `drevon memory migrate [--dry-run]`
+
+Port a legacy **v1** store (`context.md`, `decisions.md`, `patterns.md`, `log.md`) to the v2
+layout.
+
+```bash
+drevon memory migrate --dry-run   # preview the plan, write nothing
+drevon memory migrate             # apply
+```
+
+- **Non-destructive** — every original is copied to `archive/pre-v2-<date>/` before the
+  root files are removed.
+- **Idempotent** — a store that's already v2 is a no-op.
+- **Rewrites config** — bumps `version` to 2, sets the v2 `memory` block, and drops the
+  legacy `memory-protocol` instruction (the protocol is emitted canonically by the adapters).
+
+Migration also runs automatically on [`drevon sync`](/cli-reference/sync) and
+[`drevon upgrade`](/cli-reference/upgrade) when a legacy layout is detected. Pass
+`--no-migrate` to `sync` to skip it.
+
+## The dream-cycle prompt
+
+`drevon init` installs a `memory-compact` prompt in `.drevon/prompts/`. It runs the mechanical
+`compact` first, then guides an agent through non-destructive consolidation — deduping
+learnings, resolving contradictions by superseding (never deleting), and tightening the index.
+Run it at the end of a working session to keep memory sharp.

@@ -83,13 +83,13 @@ Drevon doesn't just generate static config files — it creates a **feedback loo
 
 ```mermaid
 graph TD
-    A[Agent reads memory files] --> B[Agent works on your task]
+    A[Agent reads INDEX.md] --> B[Agent works on your task]
     B --> C[Agent writes learnings to memory]
     C --> D[Agent creates reusable prompts]
     D --> A
 ```
 
-1. **Session start** — agents read all memory files to restore context
+1. **Session start** — agents read only `INDEX.md` to restore context, then load individual topic files on demand
 2. **During work** — agents make decisions informed by past context
 3. **Session end** — agents write back what they learned (decisions, patterns, discoveries)
 4. **Over time** — repeated workflows get extracted into reusable prompts

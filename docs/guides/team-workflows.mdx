@@ -118,17 +118,26 @@ drevon add-agent windsurf
 
 ### Memory in Teams
 
-Project mode memory files (`context.md`, `decisions.md`, `patterns.md`, `log.md`) work well as shared team context:
+The v2 project-mode topic files under `.drevon/memory/topics/` work well as shared team context.
+Commit `topics/` — the `log/` segments are episodic and can get noisy:
 
-| File | Team Use |
+| Path | Team Use |
 |------|----------|
-| `context.md` | Shared project overview — update during onboarding |
-| `decisions.md` | ADR records — commit these for transparency |
-| `patterns.md` | Team code conventions — evolve collaboratively |
-| `log.md` | Consider `.gitignore`-ing this for noisy workspaces |
+| `INDEX.md` | Generated pointer file — commit it; it's small and keeps everyone oriented |
+| `topics/architecture.md` | Shared project overview — update during onboarding |
+| `topics/decisions/` | ADR records, **one file per decision** — commit these for transparency |
+| `topics/patterns.md` | Team code conventions — evolve collaboratively |
+| `log/` | Consider `.gitignore`-ing these segments for noisy workspaces |
+
+<Tip>
+  Because each decision is its own file under `topics/decisions/<date>-<slug>.md`, PR review and
+  merges stay clean — teammates rarely touch the same file, so there are no merge conflicts on a
+  single monolithic `decisions.md`.
+</Tip>
 
 <Warning>
-  Memory files are designed for single-agent use. In team settings, be intentional about which memory files you commit. `decisions.md` and `patterns.md` work well as shared docs, while `log.md` can get noisy.
+  Memory is designed for single-agent use. In team settings, be intentional about what you commit:
+  the `topics/` tree works well as shared docs, while the episodic `log/` segments can get noisy.
 </Warning>
 
 ## Recommended .gitignore
@@ -136,11 +145,10 @@ Project mode memory files (`context.md`, `decisions.md`, `patterns.md`, `log.md`
 ```gitignore
 # Drevon — commit these
 # drevon.config.json
-# .drevon/memory/context.md
-# .drevon/memory/decisions.md
-# .drevon/memory/patterns.md
+# .drevon/memory/INDEX.md
+# .drevon/memory/topics/
 # skills-lock.json
 
 # Drevon — personal / noisy
-.drevon/memory/log.md
+.drevon/memory/log/
 ```

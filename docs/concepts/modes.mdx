@@ -29,10 +29,13 @@ my-workspace/
 ├── drevon.config.json
 ├── .drevon/
 │   ├── memory/
-│   │   ├── user.md          # Your preferences & decisions
-│   │   ├── projects.md      # Registry of all projects
-│   │   ├── systems.md       # Infrastructure & systems
-│   │   └── log.md           # Chronological action log
+│   │   ├── INDEX.md          # Tier 0 — read eagerly at session start (budget-capped)
+│   │   ├── topics/           # Tier 1 — read on demand
+│   │   │   ├── user.md           # Your preferences & decisions
+│   │   │   ├── projects.md       # Registry of all projects
+│   │   │   └── systems.md        # Infrastructure & systems
+│   │   ├── log/              # Tier 2 — episodic monthly segments, never read eagerly
+│   │   └── archive/          # Non-destructive storage for compacted/migrated originals
 │   ├── skills/
 │   └── prompts/
 ├── workspace/
@@ -46,12 +49,13 @@ my-workspace/
 
 ### Memory Files
 
-| File | Purpose | Update When |
+| File | Purpose | Update via |
 |------|---------|-------------|
-| `user.md` | Your preferences, communication style, confirmed decisions | User expresses a preference |
-| `projects.md` | Registry of all workspace projects with status | Project created/updated/completed |
-| `systems.md` | Systems, infrastructure, and conventions | New system created or changed |
-| `log.md` | Chronological action log (append-only) | After every significant action |
+| `INDEX.md` | Workspace one-liner, active focus, topic pointers, recent log headlines — the only file read eagerly | Maintained automatically by `drevon memory` |
+| `topics/user.md` | Your preferences, communication style, confirmed decisions | `drevon memory learn --topic user` |
+| `topics/projects.md` | Registry of all workspace projects with status | `drevon memory learn --topic projects` |
+| `topics/systems.md` | Systems, infrastructure, and conventions | `drevon memory learn --topic systems` |
+| `log/<YYYY-MM>.md` | Episodic action journal, split into monthly segments | `drevon memory log` |
 
 ### Workspace Rules
 
@@ -59,7 +63,7 @@ Hub mode includes a `workspace` section in the config that instructs agents to:
 - Keep projects organized in `workspace/` subdirectories
 - Name folders after the task
 - Never create files outside `workspace/` unless explicitly told
-- Register new projects in `projects.md`
+- Register new projects in `topics/projects.md`
 
 ## Project Mode
 
@@ -79,10 +83,13 @@ my-app/
 ├── drevon.config.json
 ├── .drevon/
 │   ├── memory/
-│   │   ├── context.md        # Project architecture & overview
-│   │   ├── decisions.md      # ADR-style decision records
-│   │   ├── patterns.md       # Code patterns & conventions
-│   │   └── log.md            # Chronological action log
+│   │   ├── INDEX.md          # Tier 0 — read eagerly at session start (budget-capped)
+│   │   ├── topics/           # Tier 1 — read on demand
+│   │   │   ├── architecture.md   # Project context, structure, key files
+│   │   │   ├── patterns.md       # Code patterns & conventions
+│   │   │   └── decisions/        # One file per decision: YYYY-MM-DD-slug.md
+│   │   ├── log/              # Tier 2 — episodic monthly segments, never read eagerly
+│   │   └── archive/          # Non-destructive storage for compacted/migrated originals
 │   ├── skills/
 │   └── prompts/
 ├── .github/copilot-instructions.md
@@ -92,15 +99,16 @@ my-app/
 
 ### Memory Files
 
-| File | Purpose | Update When |
+| File | Purpose | Update via |
 |------|---------|-------------|
-| `context.md` | Project overview, architecture, key files, dependencies | Tech stack or architecture changes |
-| `decisions.md` | ADR-style decision records with context and rationale | Technical decision is made |
-| `patterns.md` | Code patterns, conventions, anti-patterns, testing patterns | New pattern established or changed |
-| `log.md` | Chronological action log (append-only) | After every significant action |
+| `INDEX.md` | Project one-liner, active focus, topic pointers, recent log headlines — the only file read eagerly | Maintained automatically by `drevon memory` |
+| `topics/architecture.md` | Project overview, architecture, key files, dependencies | `drevon memory learn --topic architecture` |
+| `topics/patterns.md` | Code patterns, conventions, anti-patterns, testing patterns | `drevon memory learn --topic patterns` |
+| `topics/decisions/<date>-<slug>.md` | One ADR-style decision record per file | `drevon memory decide` |
+| `log/<YYYY-MM>.md` | Episodic action journal, split into monthly segments | `drevon memory log` |
 
 <Tip>
-  Project mode's `decisions.md` follows the [ADR (Architecture Decision Records)](https://adr.github.io/) format — a proven practice for documenting technical decisions with context, options considered, and rationale.
+  Project mode's decision files under `topics/decisions/` follow the [ADR (Architecture Decision Records)](https://adr.github.io/) format — a proven practice for documenting technical decisions with context, options considered, and rationale. One file per decision keeps PR review and merges clean.
 </Tip>
 
 ## Auto-Detection

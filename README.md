@@ -80,17 +80,35 @@ my-app/
 
 ## Memory System
 
-The memory system gives agents **persistent cross-session memory** — the engine behind self-evolution.
+The memory system gives agents **persistent cross-session memory** — and in v2 it stays cheap
+as it grows. Instead of reading every memory file at session start, the agent reads a small,
+budget-capped **index** and loads detail files only when relevant.
 
-**Hub mode** memory files: `user.md`, `projects.md`, `systems.md`, `log.md`
-**Project mode** memory files: `context.md`, `decisions.md`, `patterns.md`, `log.md`
+```
+.drevon/memory/
+├── INDEX.md            ← the ONLY file read at session start (budget-capped, ~260 tokens)
+├── topics/             ← read on demand: architecture.md, patterns.md, decisions/
+├── log/<YYYY-MM>.md    ← episodic history, never read eagerly
+└── archive/            ← compacted / migrated originals (non-destructive)
+```
 
-Agents are instructed to:
-1. Read all memory files at session start
-2. Write back after significant actions
-3. Create reusable prompts for repeated workflows
+Agents read `INDEX.md`, load a topic only when needed, and **write via the CLI** so entries
+stay cheap and the index stays in sync:
 
-This creates an **emergent self-improvement loop** across sessions.
+```
+drevon memory log "…"      Append a dated log entry
+drevon memory decide "…"   Record a decision (one file each)
+drevon memory learn "…"    Save a pattern/convention to a topic
+drevon memory note "…"     Set the current focus in the index
+drevon memory search "…"   BM25 recall over all history (offline)
+drevon memory compact      Roll old months into summaries (bounded growth)
+drevon memory status       Eager load vs budget, per-tier tokens
+drevon memory migrate      Port a legacy v1 store → v2 (non-destructive)
+```
+
+On a real workspace this cut the per-session eager load from **~59,000 tokens to ~260** (99.5%)
+with **no loss in answer quality**. Upgrading? Run `drevon memory migrate` (it also runs
+automatically on `drevon sync`).
 
 ## CLI Reference
 
@@ -114,6 +132,15 @@ drevon skill sync              Re-sync skills into agent configs
 
 drevon prompt list          List available prompts
 drevon prompt create <name> Create a new prompt
+
+drevon memory log <text>       Append a dated log entry
+drevon memory decide <title>   Record a decision (--why <rationale>)
+drevon memory learn <text>     Save a pattern (--topic <name>)
+drevon memory note <text>      Set the current focus
+drevon memory status           Show eager load, budget, per-tier tokens
+drevon memory search <query>   BM25 search over memory (--limit <n>)
+drevon memory compact          Roll old log months into summaries
+drevon memory migrate          Port a legacy v1 store to v2 (--dry-run)
 
 drevon upgrade              Upgrade config version
 ```

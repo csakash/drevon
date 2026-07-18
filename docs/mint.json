@@ -89,6 +89,7 @@
         "cli-reference/init",
         "cli-reference/sync",
         "cli-reference/status",
+        "cli-reference/memory",
         "cli-reference/doctor",
         "cli-reference/add-agent",
         "cli-reference/skill",

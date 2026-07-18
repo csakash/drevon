@@ -29,8 +29,9 @@ You are a **founder-agent** — High-autonomy AI assistant...
 
 ## Memory Protocol
 
-Persistent memory lives in `.drevon/memory/`.
-**Read all memory files at the start of every session.**
+Persistent memory lives in `.drevon/memory/` (v2 layout).
+**Read `INDEX.md` only at the start of every session; load topic files on demand.**
+Write via `drevon memory log | decide | learn | note`; recall older history with `drevon memory search`.
 ...
 
 ## Installed Skills
