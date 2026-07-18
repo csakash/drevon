@@ -5,6 +5,8 @@ import type { DrevonConfig, MemoryConfig } from '../types.js';
 import {
   renderIndex,
   topicPointer,
+  topicStub,
+  standardTopics,
   slugify,
   today,
   detectLayout,
@@ -140,12 +142,20 @@ export function migrateMemory(cwd: string, opts: MigrateOptions = {}): MigrateRe
   );
 
   const planned: PlannedFile[] = [];
-  const pointers: string[] = [];
   let headlines: string[] = [];
   let decisionCount = 0;
 
   const plan = (relPath: string, content: string) =>
     planned.push({ rel: rel(relPath), abs: join(memoryDir, relPath), content });
+
+  // Topic files keyed by filename, so pointers never duplicate and legacy
+  // content overrides the seeded stub. Seed the standard topics for this mode
+  // first, so config.memory.files always resolves to real files post-migration.
+  const topics = new Map<string, { content: string; hint: string; order: number }>();
+  let order = 0;
+  for (const t of standardTopics(config.mode)) {
+    topics.set(t.file, { content: topicStub(t), hint: t.hint, order: order++ });
+  }
 
   for (const legacy of legacyFiles) {
     const src = readFileSync(join(memoryDir, legacy), 'utf-8');
@@ -170,9 +180,20 @@ export function migrateMemory(cwd: string, opts: MigrateOptions = {}): MigrateRe
 
     const mapped = TOPIC_MAP[legacy];
     const topicFile = mapped ? mapped.file : legacy; // unknown/custom → keep name
-    const hint = mapped ? mapped.hint : '';
-    plan(`${TOPICS_DIR}/${topicFile}`, src.trimEnd() + '\n');
-    pointers.push(topicPointer(topicFile, hint));
+    const hint = mapped ? mapped.hint : topics.get(topicFile)?.hint ?? '';
+    const existing = topics.get(topicFile);
+    topics.set(topicFile, {
+      content: src.trimEnd() + '\n',
+      hint,
+      order: existing ? existing.order : order++,
+    });
+  }
+
+  const pointers: string[] = [...topics.entries()]
+    .sort((a, b) => a[1].order - b[1].order)
+    .map(([file, t]) => topicPointer(file, t.hint));
+  for (const [file, t] of topics) {
+    plan(`${TOPICS_DIR}/${file}`, t.content);
   }
 
   if (decisionCount > 0) {

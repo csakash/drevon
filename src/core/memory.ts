@@ -37,7 +37,7 @@ const LEGACY_FILES = [
   'systems.md',
 ];
 
-interface TopicDef {
+export interface TopicDef {
   file: string;
   title: string;
   hint: string;
@@ -53,6 +53,11 @@ const HUB_TOPICS: TopicDef[] = [
   { file: 'projects.md', title: 'Projects', hint: 'registry of workspace projects' },
   { file: 'systems.md', title: 'Systems', hint: 'systems & infrastructure' },
 ];
+
+/** The standard topic files scaffolded for a mode (also declared in config.memory.files). */
+export function standardTopics(mode: DrevonMode): TopicDef[] {
+  return mode === 'hub' ? HUB_TOPICS : PROJECT_TOPICS;
+}
 
 // ── small utilities ───────────────────────────────────────────────
 
@@ -278,7 +283,7 @@ export function refreshDecisionsPointer(memoryDir: string): void {
 
 // ── scaffolding ───────────────────────────────────────────────────
 
-function topicStub(t: TopicDef): string {
+export function topicStub(t: TopicDef): string {
   return `# ${t.title}\n\n<!-- ${t.hint} -->\n`;
 }
 

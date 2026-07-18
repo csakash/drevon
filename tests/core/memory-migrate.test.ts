@@ -114,6 +114,22 @@ describe('memory migration v1 → v2', () => {
     expect(existsSync(join(memoryDir, 'topics', 'decisions', 'legacy.md'))).toBe(true);
   });
 
+  it('seeds standard topic stubs so config.memory.files always resolves', () => {
+    // A v1 store with ONLY a log — no context.md/patterns.md.
+    writeV1(baseConfig(), { 'log.md': '### 2026-06-01 — x\n' });
+    migrateMemory(tmpDir);
+    // The v2 config declares architecture.md + patterns.md; both must now exist.
+    expect(existsSync(join(memoryDir, 'topics', 'architecture.md'))).toBe(true);
+    expect(existsSync(join(memoryDir, 'topics', 'patterns.md'))).toBe(true);
+  });
+
+  it('lets legacy content override the seeded stub', () => {
+    writeV1(baseConfig(), { 'context.md': '# Context\n\nreal content survives' });
+    migrateMemory(tmpDir);
+    const arch = readFileSync(join(memoryDir, 'topics', 'architecture.md'), 'utf-8');
+    expect(arch).toContain('real content survives');
+  });
+
   it('maps hub files to hub topics', () => {
     writeV1(baseConfig({ mode: 'hub' }), {
       'user.md': '# User',
