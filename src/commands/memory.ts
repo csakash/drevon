@@ -12,6 +12,8 @@ import {
   DEFAULT_EAGER_BUDGET_TOKENS,
 } from '../core/memory.js';
 import { migrateMemory } from '../core/memory-migrate.js';
+import { compactMemory } from '../core/memory-compact.js';
+import { searchMemory } from '../core/memory-search.js';
 import * as logger from '../utils/logger.js';
 import { colors } from '../utils/logger.js';
 import pc from 'picocolors';
@@ -172,4 +174,44 @@ export function memoryMigrate(opts: { dryRun?: boolean }): void {
     `Migrated to v2. Originals backed up at ${pc.dim(result.backupDir!)}. ` +
       `Run ${colors.yellow('drevon sync')} to refresh agent configs.`,
   );
+}
+
+export function memoryCompact(): void {
+  const ctx = resolve();
+  if (detectLayout(ctx.memoryDir) === 'v1') {
+    logger.error('Legacy memory layout detected. Run `drevon memory migrate` first.');
+    process.exit(1);
+  }
+  const result = compactMemory(ctx.cwd);
+  if (result.rotatedMonths.length === 0) {
+    logger.success('Memory is already compact — nothing older than the retention window.');
+    return;
+  }
+  for (const m of result.rotatedMonths) {
+    logger.info(`Rolled ${m} into log/summaries.md and archived its body.`);
+  }
+  logger.success(
+    `Compacted ${result.rotatedMonths.length} month(s). Bodies preserved under archive/.`,
+  );
+}
+
+export function memorySearch(query: string, opts: { limit?: string }): void {
+  const ctx = resolve();
+  const limit = opts.limit ? parseInt(opts.limit, 10) : 10;
+  const hits = searchMemory(ctx.memoryDir, query, Number.isFinite(limit) ? limit : 10);
+
+  console.log();
+  console.log(pc.dim('  ┌ ') + colors.orangeBold(`memory search: ${query}`));
+  if (hits.length === 0) {
+    console.log(pc.dim('  └ ') + pc.dim('No matches.'));
+    console.log();
+    return;
+  }
+  console.log(pc.dim('  │'));
+  for (const hit of hits) {
+    console.log(pc.dim('  │ ') + `${colors.yellow(hit.file)} ${pc.dim(`(${hit.score.toFixed(2)})`)}`);
+    if (hit.snippet) console.log(pc.dim('  │ ') + `  ${pc.dim(hit.snippet)}`);
+  }
+  console.log(pc.dim('  └'));
+  console.log();
 }

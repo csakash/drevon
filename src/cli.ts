@@ -15,6 +15,8 @@ import {
   memoryNote,
   memoryStatus,
   memoryMigrate,
+  memoryCompact,
+  memorySearch,
 } from './commands/memory.js';
 
 const program = new Command();
@@ -146,5 +148,16 @@ memory
   .description('Port a legacy (v1) memory store to the v2 index + lazy layout')
   .option('--dry-run', 'Show the planned changes without writing')
   .action((opts: { dryRun?: boolean }) => memoryMigrate(opts));
+
+memory
+  .command('compact')
+  .description('Roll log months past the retention window into summaries (non-destructive)')
+  .action(() => memoryCompact());
+
+memory
+  .command('search <query>')
+  .description('Lexical (BM25) search over topics and log history')
+  .option('--limit <n>', 'Maximum results to return')
+  .action((query: string, opts: { limit?: string }) => memorySearch(query, opts));
 
 program.parse();

@@ -382,6 +382,16 @@ export function setNote(memoryDir: string, text: string): void {
   });
 }
 
+/** Extract "YYYY-MM-DD — title" headlines from a log segment's markdown. */
+export function extractHeadlines(content: string): string[] {
+  const out: string[] = [];
+  for (const line of content.split('\n')) {
+    const m = line.match(/^#{2,3}\s+(\d{4}-\d{2}-\d{2})\s*(?:[—–-]\s*)?(.*)$/);
+    if (m) out.push(`${m[1]} — ${m[2].trim() || '(no title)'}`);
+  }
+  return out;
+}
+
 // ── stats ─────────────────────────────────────────────────────────
 
 export interface MemoryStats {
