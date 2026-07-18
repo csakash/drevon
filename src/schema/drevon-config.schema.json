@@ -118,6 +118,23 @@
         "customFiles": {
           "type": "object",
           "additionalProperties": { "type": "string" }
+        },
+        "layout": {
+          "type": "string",
+          "enum": ["v1", "v2"],
+          "description": "Store layout: v1 (legacy monolithic files) or v2 (index + lazy topics + log segments)"
+        },
+        "indexFile": {
+          "type": "string",
+          "description": "Path to the eagerly-read index file (v2 only)"
+        },
+        "eagerBudgetTokens": {
+          "type": "number",
+          "description": "Soft token cap on the eager index load (v2 only)"
+        },
+        "retentionMonths": {
+          "type": "number",
+          "description": "Log months kept as full segments before older ones roll into summaries (v2 only)"
         }
       }
     },

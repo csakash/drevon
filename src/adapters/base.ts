@@ -24,50 +24,43 @@ export abstract class BaseAdapter {
   protected getMemoryProtocol(): string {
     if (!this.config.memory.enabled) return '';
 
-    const mode = this.config.mode;
-    if (mode === 'hub') {
-      return (
-        '## Memory Protocol\n\n' +
-        'Persistent memory lives in `.drevon/memory/`.\n' +
-        '**Read all memory files at the start of every session. Write to them after significant actions.**\n\n' +
-        '| File | Contains | When to update |\n' +
-        '|------|----------|----------------|\n' +
-        '| `.drevon/memory/user.md` | User preferences, feedback, decisions | When user expresses a preference |\n' +
-        '| `.drevon/memory/projects.md` | Registry of all workspace projects | When a project is created/updated/completed |\n' +
-        '| `.drevon/memory/systems.md` | Systems & infrastructure | When a new system is created or changed |\n' +
-        '| `.drevon/memory/log.md` | Chronological action log | After every significant action |\n\n' +
-        '### Write rules\n' +
-        '- `log.md` — append only, newest at bottom, format: `### YYYY-MM-DD — title`\n' +
-        '- `user.md` — update the relevant section in place\n' +
-        '- `projects.md` / `systems.md` — update the relevant entry or add a new one\n' +
-        '- Be specific and factual — memory should be useful to a future session with zero context\n\n' +
-        '### Self-Evolution\n' +
-        '- After every significant action, write learnings back to memory\n' +
-        '- If you perform a multi-step workflow more than once, create a reusable prompt in `.drevon/prompts/`\n' +
-        '- Your goal is to become more effective with each session by building a knowledge base\n'
-      );
-    }
+    const topicsTable =
+      this.config.mode === 'hub'
+        ? '| `topics/user.md` | User preferences, feedback, decisions |\n' +
+          '| `topics/projects.md` | Registry of workspace projects |\n' +
+          '| `topics/systems.md` | Systems & infrastructure |\n' +
+          '| `topics/decisions/` | One file per significant decision |\n'
+        : '| `topics/architecture.md` | Project context, structure, key files |\n' +
+          '| `topics/patterns.md` | Code conventions, gotchas |\n' +
+          '| `topics/decisions/` | One file per significant technical decision |\n';
 
     return (
       '## Memory Protocol\n\n' +
-      'Persistent memory lives in `.drevon/memory/`.\n' +
-      '**Read all memory files at the start of every session. Write to them after significant actions.**\n\n' +
-      '| File | Contains | When to update |\n' +
-      '|------|----------|----------------|\n' +
-      '| `.drevon/memory/context.md` | Project context, architecture, key files | When you learn new things about the codebase |\n' +
-      '| `.drevon/memory/decisions.md` | Technical decisions & rationale | When a significant technical decision is made |\n' +
-      '| `.drevon/memory/patterns.md` | Code patterns, conventions, gotchas | When patterns are discovered or established |\n' +
-      '| `.drevon/memory/log.md` | Chronological action log | After every significant action |\n\n' +
-      '### Write rules\n' +
-      '- `log.md` — append only, newest at bottom, format: `### YYYY-MM-DD — title`\n' +
-      '- `context.md` — update relevant sections in place as understanding grows\n' +
-      '- `decisions.md` — append new decisions, format: `### Decision: [title]` with Date, Context, Decision, Rationale\n' +
-      '- `patterns.md` — maintain as a living reference of code conventions\n' +
-      '- Be specific and factual — memory should be useful to a future session with zero context\n\n' +
-      '### Self-Evolution\n' +
-      '- After every significant action, write learnings back to memory\n' +
-      '- If you perform a multi-step workflow more than once, create a reusable prompt in `.drevon/prompts/`\n' +
-      '- Your goal is to become more effective with each session by building a knowledge base\n'
+      'Persistent memory lives in `.drevon/memory/`, organized as an index plus lazily-loaded detail.\n\n' +
+      '### Reading (cheap)\n' +
+      '- **At session start, read only `.drevon/memory/INDEX.md`.** It carries the project summary, ' +
+      'current focus, one-line pointers to every topic file, and the most recent log headlines.\n' +
+      '- **Load a topic file only when it is relevant** to the task in front of you — the index tells ' +
+      'you which one. Do **not** read the whole memory directory up front.\n' +
+      '- To recall older history beyond the index, run `drevon memory search "<query>"`.\n\n' +
+      '### Writing (via CLI — never hand-edit the log)\n' +
+      'Use these commands so entries are appended cheaply and the index stays in sync. Never open the ' +
+      '`log/` segments to edit them by hand.\n\n' +
+      '| Command | Use when |\n' +
+      '|---------|----------|\n' +
+      '| `drevon memory log "<what happened>"` | After a significant action |\n' +
+      '| `drevon memory decide "<title>" --why "<rationale>"` | A technical decision is made |\n' +
+      '| `drevon memory learn "<insight>" --topic <patterns\\|architecture>` | A pattern/convention is discovered |\n' +
+      '| `drevon memory note "<current focus>"` | The active-work focus changes |\n\n' +
+      '### Topic files\n' +
+      '| File | Contains |\n' +
+      '|------|----------|\n' +
+      topicsTable +
+      '\n' +
+      '### Self-evolution\n' +
+      '- Record learnings as you go, but keep it lean — the index is budget-capped for a reason.\n' +
+      '- If you repeat a multi-step workflow, save it as a reusable prompt in `.drevon/prompts/`.\n' +
+      '- Run `drevon memory compact` periodically to keep memory small and fast.\n'
     );
   }
 

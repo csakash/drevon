@@ -8,6 +8,14 @@ import { doctorCommand } from './commands/doctor.js';
 import { skillCommand } from './commands/skill.js';
 import { promptCommand } from './commands/prompt.js';
 import { upgradeCommand } from './commands/upgrade.js';
+import {
+  memoryLog,
+  memoryDecide,
+  memoryLearn,
+  memoryNote,
+  memoryStatus,
+  memoryMigrate,
+} from './commands/memory.js';
 
 const program = new Command();
 
@@ -31,7 +39,8 @@ program
 program
   .command('sync')
   .description('Regenerate all agent configs from drevon.config.json')
-  .action(syncCommand);
+  .option('--no-migrate', 'Skip auto-migrating a legacy memory store to v2')
+  .action((opts: { migrate?: boolean }) => syncCommand(opts));
 
 program
   .command('add-agent <name>')
@@ -100,5 +109,42 @@ program
   .command('upgrade')
   .description('Upgrade config to latest version')
   .action(upgradeCommand);
+
+const memory = program
+  .command('memory')
+  .description('Manage the workspace memory store');
+
+memory
+  .command('log <text>')
+  .description('Append a dated entry to the action log')
+  .action((text: string) => memoryLog(text));
+
+memory
+  .command('decide <title>')
+  .description('Record a technical decision (one file per decision)')
+  .option('--why <rationale>', 'Rationale for the decision')
+  .action((title: string, opts: { why?: string }) => memoryDecide(title, opts));
+
+memory
+  .command('learn <text>')
+  .description('Save a pattern/convention to a topic file')
+  .option('--topic <name>', 'Topic file to append to (e.g. patterns, architecture)')
+  .action((text: string, opts: { topic?: string }) => memoryLearn(text, opts));
+
+memory
+  .command('note <text>')
+  .description('Update the current active-work focus in the index')
+  .action((text: string) => memoryNote(text));
+
+memory
+  .command('status')
+  .description('Show memory layout, eager budget, and per-tier token usage')
+  .action(() => memoryStatus());
+
+memory
+  .command('migrate')
+  .description('Port a legacy (v1) memory store to the v2 index + lazy layout')
+  .option('--dry-run', 'Show the planned changes without writing')
+  .action((opts: { dryRun?: boolean }) => memoryMigrate(opts));
 
 program.parse();

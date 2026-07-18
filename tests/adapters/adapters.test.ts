@@ -144,19 +144,26 @@ describe('Hub vs Project mode', () => {
     expect(content).not.toContain('Workspace Organization');
   });
 
-  it('hub mode has user.md memory reference', () => {
+  it('hub mode references hub topic files and the v2 index protocol', () => {
     const config = makeConfig('hub');
     const adapter = new CopilotAdapter(config);
     const output = adapter.compile();
     const content = output.get('.github/copilot-instructions.md')!;
-    expect(content).toContain('user.md');
+    expect(content).toContain('INDEX.md');
+    expect(content).toContain('topics/user.md');
   });
 
-  it('project mode has context.md memory reference', () => {
+  it('project mode references project topic files and the v2 index protocol', () => {
     const config = makeConfig('project');
     const adapter = new CopilotAdapter(config);
     const output = adapter.compile();
     const content = output.get('.github/copilot-instructions.md')!;
-    expect(content).toContain('context.md');
+    expect(content).toContain('INDEX.md');
+    expect(content).toContain('topics/architecture.md');
+  });
+
+  it('no longer instructs agents to read all memory files eagerly', () => {
+    const content = new CopilotAdapter(makeConfig('project')).compile().get('.github/copilot-instructions.md')!;
+    expect(content).not.toContain('Read all memory files at the start of every session');
   });
 });

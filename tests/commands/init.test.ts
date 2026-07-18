@@ -39,11 +39,12 @@ describe('init hub mode', () => {
     expect(existsSync(join(tmpDir, 'drevon.config.json'))).toBe(true);
     expect(existsSync(join(tmpDir, 'skills-lock.json'))).toBe(true);
 
-    // Memory files
-    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'user.md'))).toBe(true);
-    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'projects.md'))).toBe(true);
-    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'systems.md'))).toBe(true);
-    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'log.md'))).toBe(true);
+    // Memory files (v2 layout: index + lazy topics)
+    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'INDEX.md'))).toBe(true);
+    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'topics', 'user.md'))).toBe(true);
+    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'topics', 'projects.md'))).toBe(true);
+    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'topics', 'systems.md'))).toBe(true);
+    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'log'))).toBe(true);
 
     // Skills - find-skills auto-installed
     expect(existsSync(join(tmpDir, '.drevon', 'skills', 'find-skills', 'SKILL.md'))).toBe(true);
@@ -99,17 +100,17 @@ describe('init project mode', () => {
 
     await scaffold(tmpDir, options);
 
-    // Project memory files
-    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'context.md'))).toBe(true);
-    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'decisions.md'))).toBe(true);
-    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'patterns.md'))).toBe(true);
-    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'log.md'))).toBe(true);
+    // Project memory files (v2 layout: index + lazy topics)
+    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'INDEX.md'))).toBe(true);
+    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'topics', 'architecture.md'))).toBe(true);
+    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'topics', 'patterns.md'))).toBe(true);
+    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'topics', 'decisions'))).toBe(true);
 
     // No workspace directory
     expect(existsSync(join(tmpDir, 'workspace'))).toBe(false);
 
-    // No hub-specific memory files
-    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'user.md'))).toBe(false);
+    // No hub-specific memory topics
+    expect(existsSync(join(tmpDir, '.drevon', 'memory', 'topics', 'user.md'))).toBe(false);
 
     // Config is project mode with only specified agents
     const config = JSON.parse(readFileSync(join(tmpDir, 'drevon.config.json'), 'utf-8'));

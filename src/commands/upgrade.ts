@@ -1,17 +1,11 @@
+import { join } from 'path';
 import { loadConfig, writeConfig, findProjectRoot } from '../core/config.js';
 import { compile } from '../core/compiler.js';
+import { detectLayout } from '../core/memory.js';
+import { migrateMemory, upgradeConfigToV2 } from '../core/memory-migrate.js';
 import * as logger from '../utils/logger.js';
 
-interface Migration {
-  fromVersion: number;
-  toVersion: number;
-  migrate: (config: any) => any;
-}
-
-const migrations: Migration[] = [
-  // Future migrations go here
-  // { fromVersion: 1, toVersion: 2, migrate: (config) => { ... return config; } }
-];
+const LATEST_VERSION = 2;
 
 export async function upgradeCommand(): Promise<void> {
   let cwd: string;
@@ -31,29 +25,32 @@ export async function upgradeCommand(): Promise<void> {
   }
 
   const currentVersion = config.version;
-  const latestVersion = migrations.length > 0
-    ? migrations[migrations.length - 1].toVersion
-    : currentVersion;
+  const memoryDir = join(cwd, config.memory.directory);
+  const needsMemoryMigration = config.memory.enabled && detectLayout(memoryDir) === 'v1';
 
-  if (currentVersion >= latestVersion) {
+  if (currentVersion >= LATEST_VERSION && !needsMemoryMigration) {
     logger.success(`Config is already at the latest version (v${currentVersion}).`);
     return;
   }
 
-  let upgraded = config as any;
-  for (const migration of migrations) {
-    if (upgraded.version === migration.fromVersion) {
-      logger.info(`Migrating v${migration.fromVersion} → v${migration.toVersion}...`);
-      upgraded = migration.migrate(upgraded);
+  // v1 → v2: migrate the memory store (also rewrites the config to the v2 shape).
+  if (needsMemoryMigration) {
+    logger.info('Migrating memory store v1 → v2...');
+    const result = migrateMemory(cwd);
+    if (result.status === 'migrated') {
+      logger.success(`Memory migrated to v2. Originals backed up at ${result.backupDir}.`);
     }
+    config = loadConfig(cwd); // reload the rewritten config
+  } else if (currentVersion < LATEST_VERSION) {
+    // Config is behind but the memory store is already v2 (or disabled) — just bump the shape.
+    config = upgradeConfigToV2(config);
+    writeConfig(cwd, config);
   }
 
-  writeConfig(cwd, upgraded);
-  const result = compile(cwd, upgraded);
-
+  const result = compile(cwd, config);
   for (const f of result.updated) {
     logger.fileUpdated(f);
   }
 
-  logger.success(`Config upgraded from v${currentVersion} to v${upgraded.version}.`);
+  logger.success(`Config upgraded from v${currentVersion} to v${config.version}.`);
 }
