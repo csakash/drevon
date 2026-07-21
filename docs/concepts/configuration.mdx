@@ -52,7 +52,16 @@ All Drevon settings live in `drevon.config.json`. This is the only file you need
   "memory": {
     "enabled": true,
     "directory": ".drevon/memory",
-    "files": ["user.md", "projects.md", "systems.md", "log.md"]
+    "layout": "v2",
+    "indexFile": ".drevon/memory/INDEX.md",
+    "eagerBudgetTokens": 2000,
+    "retentionMonths": 3,
+    "files": {
+      "index": ".drevon/memory/INDEX.md",
+      "user": ".drevon/memory/topics/user.md",
+      "projects": ".drevon/memory/topics/projects.md",
+      "systems": ".drevon/memory/topics/systems.md"
+    }
   },
   "skills": {
     "enabled": true,
@@ -69,7 +78,7 @@ All Drevon settings live in `drevon.config.json`. This is the only file you need
     "rules": [
       "One folder per project or task",
       "Never create files outside workspace/ unless explicitly told",
-      "Register new projects in .drevon/memory/projects.md"
+      "Register new projects in .drevon/memory/topics/projects.md"
     ]
   }
 }
@@ -131,8 +140,12 @@ Each key in the `agents` object corresponds to a supported agent ID.
 | Field | Type | Description |
 |-------|------|-------------|
 | `enabled` | `boolean` | Enable persistent memory system |
-| `directory` | `string` | Memory files directory |
-| `files` | `string[]` | List of memory files |
+| `directory` | `string` | Memory store directory |
+| `layout` | `string` | Store layout version (`"v2"` for the index + tiered store) |
+| `indexFile` | `string` | Path to the eagerly-loaded `INDEX.md` |
+| `eagerBudgetTokens` | `number` | Soft token cap on the index (default `2000`) |
+| `retentionMonths` | `number` | Log months older than this are eligible for `compact` (default `3`) |
+| `files` | `object` | Map of logical names to topic/index file paths |
 | `customFiles` | `string[]` | Additional custom memory files |
 
 ### Skills

@@ -34,11 +34,21 @@ export interface AgentConfig {
   config?: Record<string, unknown>;
 }
 
+export type MemoryLayout = 'v1' | 'v2';
+
 export interface MemoryConfig {
   enabled: boolean;
   directory: string;
   files: Record<string, string>;
   customFiles?: Record<string, string>;
+  /** Store layout. 'v1' = legacy monolithic files, 'v2' = index + lazy topics + log segments. */
+  layout?: MemoryLayout;
+  /** Relative path to the eagerly-read index file (v2 only). */
+  indexFile?: string;
+  /** Soft cap on the eager (index) load, in tokens. Governs INDEX.md trimming. */
+  eagerBudgetTokens?: number;
+  /** Log months kept as full segments before older ones roll into summaries. */
+  retentionMonths?: number;
 }
 
 export interface SkillsConfig {

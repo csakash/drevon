@@ -43,6 +43,10 @@ const DrevonConfigSchema = z.object({
     directory: z.string(),
     files: z.record(z.string(), z.string()),
     customFiles: z.record(z.string(), z.string()).optional(),
+    layout: z.enum(['v1', 'v2']).optional(),
+    indexFile: z.string().optional(),
+    eagerBudgetTokens: z.number().optional(),
+    retentionMonths: z.number().optional(),
   }),
   skills: z.object({
     enabled: z.boolean(),
@@ -96,39 +100,25 @@ export function findProjectRoot(startDir: string): string {
   );
 }
 
+// v2 store: the eager index plus lazy topic files. The log lives in dated
+// segments under log/ and is never listed here (never eagerly read).
 const HUB_MEMORY_FILES: Record<string, string> = {
-  user: '.drevon/memory/user.md',
-  projects: '.drevon/memory/projects.md',
-  systems: '.drevon/memory/systems.md',
-  log: '.drevon/memory/log.md',
+  index: '.drevon/memory/INDEX.md',
+  user: '.drevon/memory/topics/user.md',
+  projects: '.drevon/memory/topics/projects.md',
+  systems: '.drevon/memory/topics/systems.md',
 };
 
 const PROJECT_MEMORY_FILES: Record<string, string> = {
-  context: '.drevon/memory/context.md',
-  decisions: '.drevon/memory/decisions.md',
-  patterns: '.drevon/memory/patterns.md',
-  log: '.drevon/memory/log.md',
+  index: '.drevon/memory/INDEX.md',
+  architecture: '.drevon/memory/topics/architecture.md',
+  patterns: '.drevon/memory/topics/patterns.md',
 };
 
+// The memory protocol itself is emitted canonically by BaseAdapter.getMemoryProtocol();
+// it is intentionally NOT duplicated as a config instruction. Migration strips any
+// legacy `memory-protocol` instruction from existing configs.
 const DEFAULT_HUB_INSTRUCTIONS = [
-  {
-    id: 'memory-protocol',
-    title: 'Memory Protocol',
-    alwaysApply: true,
-    content:
-      'Read all files in .drevon/memory/ at the start of every session. Write to them after significant actions.\n\n' +
-      '| File | Contains | When to update |\n' +
-      '|------|----------|----------------|\n' +
-      '| `.drevon/memory/user.md` | User preferences, feedback, decisions | When user expresses a preference |\n' +
-      '| `.drevon/memory/projects.md` | Registry of all workspace projects | When a project is created/updated/completed |\n' +
-      '| `.drevon/memory/systems.md` | Systems & infrastructure | When a new system is created or changed |\n' +
-      '| `.drevon/memory/log.md` | Chronological action log | After every significant action |\n\n' +
-      '### Write rules\n' +
-      '- `log.md` — append only, newest at bottom, format: `### YYYY-MM-DD — title`\n' +
-      '- `user.md` — update the relevant section in place\n' +
-      '- `projects.md` / `systems.md` — update the relevant entry or add a new one\n' +
-      '- Be specific and factual — memory should be useful to a future session with zero context',
-  },
   {
     id: 'workspace-rules',
     title: 'Workspace Organization',
@@ -137,31 +127,16 @@ const DEFAULT_HUB_INSTRUCTIONS = [
       'All work happens inside `workspace/`. One folder per project or task.\n' +
       '- Name folders after the task (e.g., `workspace/landing-page/`)\n' +
       '- Never create files outside `workspace/` unless explicitly told\n' +
-      '- Register new projects in `.drevon/memory/projects.md`',
+      '- Register new projects via `drevon memory learn "<project>" --topic projects`',
   },
 ];
 
-const DEFAULT_PROJECT_INSTRUCTIONS = [
-  {
-    id: 'memory-protocol',
-    title: 'Memory Protocol',
-    alwaysApply: true,
-    content:
-      'Read all files in .drevon/memory/ at the start of every session. Write to them after significant actions.\n\n' +
-      '| File | Contains | When to update |\n' +
-      '|------|----------|----------------|\n' +
-      '| `.drevon/memory/context.md` | Project context, architecture, key files | When you learn new things about the codebase |\n' +
-      '| `.drevon/memory/decisions.md` | Technical decisions & rationale | When a significant technical decision is made |\n' +
-      '| `.drevon/memory/patterns.md` | Code patterns, conventions, gotchas | When patterns are discovered or established |\n' +
-      '| `.drevon/memory/log.md` | Chronological action log | After every significant action |\n\n' +
-      '### Write rules\n' +
-      '- `log.md` — append only, newest at bottom, format: `### YYYY-MM-DD — title`\n' +
-      '- `context.md` — update relevant sections in place as understanding grows\n' +
-      '- `decisions.md` — append new decisions, format: `### Decision: [title]` with Date, Context, Decision, Rationale\n' +
-      '- `patterns.md` — maintain as a living reference of code conventions\n' +
-      '- Be specific and factual — memory should be useful to a future session with zero context',
-  },
-];
+const DEFAULT_PROJECT_INSTRUCTIONS: {
+  id: string;
+  title: string;
+  alwaysApply?: boolean;
+  content: string;
+}[] = [];
 
 export function createDefaultConfig(
   mode: DrevonMode,
@@ -179,7 +154,7 @@ export function createDefaultConfig(
 
   return {
     $schema: 'https://drevon.dev/schema/v1.json',
-    version: 1,
+    version: 2,
     mode,
     name,
     identity,
@@ -189,6 +164,10 @@ export function createDefaultConfig(
       enabled: true,
       directory: '.drevon/memory',
       files: mode === 'hub' ? { ...HUB_MEMORY_FILES } : { ...PROJECT_MEMORY_FILES },
+      layout: 'v2',
+      indexFile: '.drevon/memory/INDEX.md',
+      eagerBudgetTokens: 2000,
+      retentionMonths: 3,
     },
     skills: {
       enabled: true,

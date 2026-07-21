@@ -78,15 +78,6 @@ export function loadTemplate(name: string): HandlebarsTemplateDelegate {
   return Handlebars.compile(source);
 }
 
-export function loadMemoryTemplate(mode: string, fileName: string): string {
-  const dir = ensureTemplatesDir();
-  const filePath = join(dir, 'memory', mode, fileName);
-  if (!existsSync(filePath)) {
-    throw new Error(`Memory template not found: ${filePath}`);
-  }
-  return readFileSync(filePath, 'utf-8');
-}
-
 export function loadPromptTemplate(fileName: string): string {
   const dir = ensureTemplatesDir();
   const filePath = join(dir, 'prompts', fileName);

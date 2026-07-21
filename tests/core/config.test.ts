@@ -26,6 +26,9 @@ describe('config', () => {
     expect(config.mode).toBe('hub');
     expect(config.name).toBe('test-workspace');
     expect(config.workspace.enabled).toBe(true);
+    expect(config.version).toBe(2);
+    expect(config.memory.layout).toBe('v2');
+    expect(config.memory.files.index).toBeDefined();
     expect(config.memory.files.user).toBeDefined();
     expect(config.memory.files.projects).toBeDefined();
   });
@@ -40,8 +43,10 @@ describe('config', () => {
 
     expect(config.mode).toBe('project');
     expect(config.workspace.enabled).toBe(false);
-    expect(config.memory.files.context).toBeDefined();
-    expect(config.memory.files.decisions).toBeDefined();
+    expect(config.memory.layout).toBe('v2');
+    expect(config.memory.files.index).toBeDefined();
+    expect(config.memory.files.architecture).toBeDefined();
+    expect(config.memory.files.patterns).toBeDefined();
   });
 
   it('round-trips config write/load', () => {

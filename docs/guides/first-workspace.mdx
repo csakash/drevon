@@ -66,10 +66,13 @@ ls -la
 drevon.config.json
 .drevon/
   memory/
-    user.md
-    projects.md
-    systems.md
-    log.md
+    INDEX.md
+    topics/
+      user.md
+      projects.md
+      systems.md
+    log/
+    archive/
   skills/
     find-skills/
   prompts/
@@ -137,7 +140,7 @@ mkdir workspace/my-first-project
 
 Now open the workspace in your editor and start a conversation with your AI agent. The agent will:
 
-1. **Read memory files** to understand the workspace context
+1. **Read `INDEX.md`** to understand the workspace context, loading topic files on demand
 2. **Follow your identity rules** (founder-agent posture)
 3. **Know about installed skills** (browser-use, find-skills)
 4. **Use your custom instructions** (tech stack preferences)
@@ -147,7 +150,8 @@ Now open the workspace in your editor and start a conversation with your AI agen
 After your first session, check if the agent updated memory:
 
 ```bash
-cat .drevon/memory/log.md
+cat .drevon/memory/INDEX.md         # Recent log headlines and updated pointers
+drevon memory search "first session"
 ```
 
 You should see new entries documenting what the agent did. Over time, these memory files become an invaluable knowledge base.

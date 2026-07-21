@@ -37,41 +37,41 @@ This ensures anyone cloning the repo gets the full AI workspace configuration wi
 
 ## Memory Best Practices
 
-### Keep Memory Files Accurate
+### Keep the Index Lean and Accurate
 
-Memory is only useful if it's up to date. Periodically review:
+Memory is only useful if it's up to date — and in v2 the index is the file that loads every
+session, so keep it tight. Periodically review the store:
 
 ```bash
-cat .drevon/memory/user.md      # Still accurate?
-cat .drevon/memory/projects.md   # All projects listed?
+drevon memory status              # Eager load vs. budget, per-tier usage
+cat .drevon/memory/INDEX.md       # Summary, active focus, and pointers still accurate?
 ```
 
 ### Seed Important Context
 
-Don't wait for agents to discover things — pre-populate memory with critical context:
+Don't wait for agents to discover things — pre-populate memory through the CLI so entries land
+in the right topic file and the index stays in sync:
 
-```markdown
-# context.md
-
-## Architecture
-This is a Next.js 15 app using the App Router. 
-Key directories:
-- app/ — Pages and API routes
-- lib/ — Shared utilities
-- components/ — React components
-
-## Dependencies
-- Prisma for database
-- NextAuth for authentication
-- Stripe for payments
+```bash
+drevon memory learn "Next.js 15 App Router; app/ pages+API, lib/ utils, components/ React" \
+  --topic architecture
+drevon memory learn "Prisma for DB, NextAuth for auth, Stripe for payments" --topic architecture
+drevon memory decide "Use Prisma for the data layer" --why "type-safe queries, easy migrations"
 ```
 
-### Let log.md Grow Naturally
+### Never Hand-Edit the Log — Let It Grow, Then Compact
 
-Don't prune `log.md` — it's designed to be append-only. Long logs help agents understand project history and trajectory.
+Append to the log through `drevon memory log` (never edit `log/` files by hand) so the monthly
+segments and the index stay consistent. The log is episodic and never loaded eagerly, so it can
+grow freely.
+
+```bash
+drevon memory compact             # Roll old months into summaries, archive their bodies
+```
 
 <Warning>
-  If `log.md` gets very large (10K+ lines), consider archiving old entries to a separate file and keeping recent history in the active log.
+  Run `drevon memory compact` periodically (or use the shipped `memory-compact` prompt) to keep
+  the store fast. `drevon doctor` warns when the index exceeds its budget.
 </Warning>
 
 ## Instructions Best Practices

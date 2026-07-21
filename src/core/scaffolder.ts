@@ -53,7 +53,7 @@ export async function scaffold(dir: string, options: InitOptions): Promise<void>
 
   // 3. Initialize memory
   if (enableMemory) {
-    const memoryFiles = initMemory(dir, mode);
+    const memoryFiles = initMemory(dir, mode, name);
     for (const f of memoryFiles) {
       logger.fileCreated(f);
     }

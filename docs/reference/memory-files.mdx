@@ -1,201 +1,138 @@
 ---
 title: Memory Files Reference
-description: Complete reference for all memory file templates.
+description: The v2 memory store layout — index, topics, log segments, and archive.
 ---
 
 ## Overview
 
-Memory files are markdown templates that agents read and write to maintain context across sessions. The specific files depend on the workspace mode.
+Drevon v2 memory is a small set of markdown files organized into three tiers by how eagerly
+they load. The agent reads only the index at session start and pulls detail in on demand.
 
-## Hub Mode Files
-
-### user.md
-
-Stores user preferences, communication style, and decisions.
-
-```markdown
-# User Preferences & Profile
-
-## Communication Style
-<!-- How the user likes to interact -->
-
-## Confirmed Preferences
-<!-- Decisions the user has explicitly made -->
-
-## Feedback & Reactions
-| Date | What | Reaction |
-|------|------|----------|
-
-## Decisions Made
-<!-- Significant choices made with or by the user -->
+```
+.drevon/memory/
+├── INDEX.md            Tier 0 — eager, budget-capped
+├── topics/             Tier 1 — read on demand
+│   ├── architecture.md   project mode
+│   ├── patterns.md
+│   └── decisions/        one file per decision
+├── log/                Tier 2 — episodic, never eager
+│   ├── <YYYY-MM>.md
+│   └── summaries.md
+└── archive/            compacted / migrated originals (non-destructive)
 ```
 
-**Update when:** User expresses a preference or makes a decision.
-**Write mode:** Update the relevant section in place.
+## Tier 0 — `INDEX.md`
 
----
-
-### projects.md
-
-Registry of all projects in the workspace.
+The **only file read at session start**. It is generated and maintained by Drevon (via the
+`drevon memory` commands) — you don't hand-write it. It stays within a token budget
+(`memory.eagerBudgetTokens`, default ~2,000).
 
 ```markdown
-# Project Registry
+# Memory Index
 
-All active and completed projects in `workspace/`.
+## Project
+<one-line project summary>
 
-## Active Projects
-<!-- ### project-name
-- **Folder:** workspace/project-name/
-- **Status:** active | completed | paused
-- **Started:** YYYY-MM-DD
-- **Summary:** one-line description -->
+## Active Work
+<current focus — set via `drevon memory note`>
 
-## Completed Projects
+## Topics
+- [Architecture](topics/architecture.md) — project context, structure, key files
+- [Patterns](topics/patterns.md) — code conventions, gotchas
+- [Decisions](topics/decisions/) — 29 decisions (latest: …)
+
+## Recent Log
+- 2026-07-18 — <headline>
+- …  (last 5)
 ```
 
-**Update when:** A project is created, updated, or completed.
-**Write mode:** Update the relevant entry or add a new one.
+## Tier 1 — `topics/`
 
----
+Small, on-demand files. The index points to each one.
 
-### systems.md
+| File (project mode) | Contains | Written by |
+|------|----------|-----------|
+| `topics/architecture.md` | Project context, structure, key files | `drevon memory learn --topic architecture` |
+| `topics/patterns.md` | Code conventions, gotchas | `drevon memory learn --topic patterns` |
+| `topics/decisions/<date>-<slug>.md` | One decision per file | `drevon memory decide` |
 
-Infrastructure, systems, and conventions record.
+In **hub mode**, the topics are `user.md`, `projects.md`, and `systems.md` instead of
+architecture/patterns.
+
+A decision file looks like:
 
 ```markdown
-# Systems & Infrastructure
+# Use Postgres
 
-Persistent record of systems, conventions, and infrastructure.
-Update when a new system is created or changed.
+- **Date:** 2026-07-18
+- **Why:** ACID guarantees and mature tooling
 ```
 
-**Update when:** A new system is created or an existing one changes.
-**Write mode:** Update the relevant entry or add a new one.
+## Tier 2 — `log/`
 
----
-
-### log.md
-
-Chronological action log — the activity journal.
+The episodic activity journal, split into **monthly segments** so it never loads as one
+monolith. Never read eagerly; searchable via `drevon memory search`.
 
 ```markdown
-# Action Log
+# Log — 2026-07
 
-Chronological record of significant actions. Append only — never delete.
-
-### YYYY-MM-DD — title
-**Action:** What was done
-**Outcome:** What resulted
+### 2026-07-18 — Shipped the v2 memory system
 ```
 
-**Update when:** After every significant action.
-**Write mode:** Append only (newest at bottom). Format: `### YYYY-MM-DD — title`
-
----
-
-## Project Mode Files
-
-### context.md
-
-Project overview, architecture, and key information.
+`log/summaries.md` holds the headlines of months that compaction has archived:
 
 ```markdown
-# Project Context
+# Log Summaries
 
-## Overview
-<!-- One-paragraph project description -->
-
-## Architecture
-<!-- High-level architecture description -->
-
-## Key Files
-<!-- Important files and their purposes -->
-
-## Dependencies
-<!-- Key dependencies and why they're used -->
+## 2026-03 _(cold)_
+- 2026-03-05 — …
 ```
 
-**Update when:** Tech stack, architecture, or project scope changes.
-**Write mode:** Update the relevant section in place.
+## `archive/`
 
----
+Non-destructive storage: pre-migration originals (`archive/pre-v2-<date>/`) and the bodies of
+log months that `drevon memory compact` has rolled up. Nothing here is ever loaded eagerly;
+nothing is ever deleted by Drevon.
 
-### decisions.md
-
-ADR-style technical decision records.
-
-```markdown
-# Technical Decisions
-
-Architecture Decision Records. Append new decisions, never modify old ones.
-
-<!-- ### NNN — Title
-- **Date:** YYYY-MM-DD
-- **Context:** What prompted this decision
-- **Decision:** What was decided
-- **Rationale:** Why this option was chosen
-- **Alternatives:** What else was considered -->
-```
-
-**Update when:** A technical decision is made.
-**Write mode:** Append a new numbered record.
-
----
-
-### patterns.md
-
-Code patterns, conventions, and anti-patterns.
-
-```markdown
-# Code Patterns & Conventions
-
-Established patterns in this codebase.
-
-## Naming Conventions
-## File Structure
-## Error Handling Patterns
-## Testing Patterns
-## Anti-Patterns (Don't Do This)
-```
-
-**Update when:** A new pattern is established or an existing one changes.
-**Write mode:** Update the relevant section or add a new one.
-
----
-
-### log.md (Project Mode)
-
-Same format as hub mode:
-
-```markdown
-# Action Log
-
-Chronological record of significant actions. Append only — never delete.
-```
-
-## Memory Protocol
-
-Both modes include a **memory protocol** in agent instructions that tells agents:
-
-1. **Read** all memory files at the start of every session
-2. **Write** after significant actions
-3. **Be specific and factual** — memory should be useful to a future session with zero context
-4. **Create reusable prompts** when performing the same multi-step workflow repeatedly (self-evolution)
-
-## Custom Memory Files
-
-Add custom files via the `customFiles` config option:
+## Configuration
 
 ```json
 {
   "memory": {
     "enabled": true,
     "directory": ".drevon/memory",
-    "files": ["user.md", "projects.md", "systems.md", "log.md"],
-    "customFiles": ["roadmap.md", "competitors.md"]
+    "layout": "v2",
+    "indexFile": ".drevon/memory/INDEX.md",
+    "eagerBudgetTokens": 2000,
+    "retentionMonths": 3,
+    "files": {
+      "index": ".drevon/memory/INDEX.md",
+      "architecture": ".drevon/memory/topics/architecture.md",
+      "patterns": ".drevon/memory/topics/patterns.md"
+    }
   }
 }
 ```
 
-Custom files must be created manually — Drevon only creates the standard template files.
+- **`eagerBudgetTokens`** — soft cap on the index; it trims its recent-log tail to stay under.
+- **`retentionMonths`** — log months older than this are eligible for `compact` (default 3).
+
+## The memory protocol
+
+Every compiled agent config (`CLAUDE.md`, `AGENTS.md`, `copilot-instructions.md`) carries the
+v2 protocol, which tells the agent to:
+
+1. **Read `INDEX.md` only** at session start.
+2. **Load a topic file only when relevant** — the index says which.
+3. **Write via `drevon memory log | decide | learn | note`** — never hand-edit the log.
+4. **Recall older history with `drevon memory search`.**
+
+## Migrating from v1
+
+Legacy stores (`context.md`, `decisions.md`, `patterns.md`, `log.md`) port over with:
+
+```bash
+drevon memory migrate        # --dry-run to preview; non-destructive; idempotent
+```
+
+See the [`drevon memory` reference](/cli-reference/memory).

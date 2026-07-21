@@ -5,6 +5,7 @@ import { loadPromptTemplate } from '../utils/template.js';
 const STARTER_PROMPTS = [
   'code-review.md',
   'debug.md',
+  'memory-compact.md',
   'new-feature.md',
   'refactor.md',
   'write-tests.md',

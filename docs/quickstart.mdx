@@ -59,11 +59,14 @@ After running `drevon init`, your directory will contain:
 my-workspace/
 ├── drevon.config.json          # Single source of truth
 ├── .drevon/
-│   ├── memory/                 # Cross-project memory
-│   │   ├── user.md
-│   │   ├── projects.md
-│   │   ├── systems.md
-│   │   └── log.md
+│   ├── memory/                 # Cross-project memory (v2)
+│   │   ├── INDEX.md            # Read eagerly at session start
+│   │   ├── topics/            # Loaded on demand
+│   │   │   ├── user.md
+│   │   │   ├── projects.md
+│   │   │   └── systems.md
+│   │   ├── log/               # Monthly episodic segments
+│   │   └── archive/           # Compacted / migrated originals
 │   ├── skills/                 # Installed skills
 │   │   └── find-skills/        # Auto-installed
 │   └── prompts/                # Reusable workflows
@@ -83,11 +86,14 @@ my-app/
 ├── src/                        # Your code (untouched)
 ├── drevon.config.json          # Single source of truth
 ├── .drevon/
-│   ├── memory/                 # Project-scoped memory
-│   │   ├── context.md
-│   │   ├── decisions.md
-│   │   ├── patterns.md
-│   │   └── log.md
+│   ├── memory/                 # Project-scoped memory (v2)
+│   │   ├── INDEX.md            # Read eagerly at session start
+│   │   ├── topics/            # Loaded on demand
+│   │   │   ├── architecture.md
+│   │   │   ├── patterns.md
+│   │   │   └── decisions/     # One file per decision
+│   │   ├── log/               # Monthly episodic segments
+│   │   └── archive/           # Compacted / migrated originals
 │   ├── skills/
 │   │   └── find-skills/
 │   └── prompts/
