@@ -83,6 +83,9 @@ const SKILLS_CLI_AGENT_MAP: Record<string, string> = {
   windsurf: 'windsurf',
   cline: 'cline',
   continue: 'continue',
+  // Verified 2026-08-18: the skills CLI lists `gemini-cli` among its valid `-a` agent
+  // targets (probe: `npx -y skills add <repo> -a <invalid>` prints the full list).
+  gemini: 'gemini-cli',
 };
 
 export interface SkillCommandOptions {
