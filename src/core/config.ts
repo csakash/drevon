@@ -6,6 +6,7 @@ import type { DrevonConfig, DrevonMode, AgentId, IdentityConfig } from '../types
 const AgentIdEnum = z.enum([
   'copilot', 'claude', 'cursor', 'codex',
   'windsurf', 'cline', 'aider', 'continue',
+  'gemini',
 ]);
 
 const IdentitySchema = z.object({
