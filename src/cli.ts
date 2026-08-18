@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module';
 import { Command } from 'commander';
 import { initCommand } from './commands/init.js';
 import { syncCommand } from './commands/sync.js';
@@ -19,12 +20,17 @@ import {
   memorySearch,
 } from './commands/memory.js';
 
+// Read the version from package.json rather than hardcoding it: the literal
+// had drifted to 0.1.0 while the package shipped 0.2.0, so `drevon --version`
+// misreported which build was installed.
+const { version } = createRequire(import.meta.url)('../package.json') as { version: string };
+
 const program = new Command();
 
 program
   .name('drevon')
   .description('Turn any directory into a self-evolving AI workspace')
-  .version('0.1.0');
+  .version(version);
 
 program
   .command('init')
