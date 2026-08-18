@@ -8,6 +8,7 @@ import { WindsurfAdapter } from './windsurf.js';
 import { ClineAdapter } from './cline.js';
 import { AiderAdapter } from './aider.js';
 import { ContinueAdapter } from './continue.js';
+import { GeminiAdapter } from './gemini.js';
 
 const ADAPTER_MAP: Record<AgentId, new (config: DrevonConfig) => BaseAdapter> = {
   copilot: CopilotAdapter,
@@ -18,6 +19,7 @@ const ADAPTER_MAP: Record<AgentId, new (config: DrevonConfig) => BaseAdapter> = 
   cline: ClineAdapter,
   aider: AiderAdapter,
   continue: ContinueAdapter,
+  gemini: GeminiAdapter,
 };
 
 export function getAdapter(agentId: AgentId, config: DrevonConfig): BaseAdapter {
@@ -42,6 +44,7 @@ export function getAgentDisplayName(agentId: AgentId): string {
     cline: 'Cline',
     aider: 'Aider',
     continue: 'Continue.dev',
+    gemini: 'Gemini CLI',
   };
   return names[agentId] || agentId;
 }

@@ -10,7 +10,8 @@ export type AgentId =
   | 'windsurf'
   | 'cline'
   | 'aider'
-  | 'continue';
+  | 'continue'
+  | 'gemini';
 
 export interface IdentityConfig {
   role: string;

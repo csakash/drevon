@@ -81,7 +81,7 @@
       "type": "object",
       "description": "Per-agent configuration",
       "patternProperties": {
-        "^(copilot|claude|cursor|codex|windsurf|cline|aider|continue)$": {
+        "^(copilot|claude|cursor|codex|windsurf|cline|aider|continue|gemini)$": {
           "type": "object",
           "properties": {
             "enabled": {
