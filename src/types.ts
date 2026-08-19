@@ -11,7 +11,8 @@ export type AgentId =
   | 'cline'
   | 'aider'
   | 'continue'
-  | 'gemini';
+  | 'gemini'
+  | 'antigravity';
 
 export interface IdentityConfig {
   role: string;
