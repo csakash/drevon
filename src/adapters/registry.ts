@@ -9,6 +9,7 @@ import { ClineAdapter } from './cline.js';
 import { AiderAdapter } from './aider.js';
 import { ContinueAdapter } from './continue.js';
 import { GeminiAdapter } from './gemini.js';
+import { AntigravityAdapter } from './antigravity.js';
 
 const ADAPTER_MAP: Record<AgentId, new (config: DrevonConfig) => BaseAdapter> = {
   copilot: CopilotAdapter,
@@ -20,6 +21,7 @@ const ADAPTER_MAP: Record<AgentId, new (config: DrevonConfig) => BaseAdapter> = 
   aider: AiderAdapter,
   continue: ContinueAdapter,
   gemini: GeminiAdapter,
+  antigravity: AntigravityAdapter,
 };
 
 export function getAdapter(agentId: AgentId, config: DrevonConfig): BaseAdapter {
