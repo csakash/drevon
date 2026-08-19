@@ -86,6 +86,9 @@ const SKILLS_CLI_AGENT_MAP: Record<string, string> = {
   // Verified 2026-08-18: the skills CLI lists `gemini-cli` among its valid `-a` agent
   // targets (probe: `npx -y skills add <repo> -a <invalid>` prints the full list).
   gemini: 'gemini-cli',
+  // Verified 2026-08-19 by the same invalid-agent probe: `antigravity-cli` is
+  // the CLI target (`antigravity` alone is the IDE).
+  antigravity: 'antigravity-cli',
 };
 
 export interface SkillCommandOptions {
